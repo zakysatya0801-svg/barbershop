@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('produks', function (Blueprint $table) {
             $table->id('produk_id');
             $table->foreignId('shop_id')
-                ->constrained('shops', 'shop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
                 ->onDelete('cascade');
             $table->string('name_product');
             $table->decimal('price', 15, 2);

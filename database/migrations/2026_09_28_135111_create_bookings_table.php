@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id('booking_id');
-            $table-> $table->foreignId('customer_id')
-            ->constrained('customers', 'customers_id')
+            $table->foreignId('customer_id')
+            ->constrained('customers', 'customer_id')
             ->onDelete('cascade');
              $table->foreignId('shop_id')
-             ->constrained('go_barber_shops', 'shop_id')
+             ->constrained('go_barbershops', 'go_barbershop_id')
              ->onDelete('cascade');
-              $table->foreignId('service')
-              ->constrained('service', 'service_id')
+              $table->foreignId('service_id')
+              ->constrained('services', 'service_id')
               ->onDelete('cascade');
                 $table->foreignId('barber_id')
                 ->constrained('barbers', 'barber_id')

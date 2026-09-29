@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phonr');
             $table->foreignId('admin_id')
-            ->constrained('admins', 'id')
+            ->constrained('admins', 'admin_id')
             ->onDelete('cascade');
 
             $table->timestamps();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins_owners');
+        Schema::dropIfExists('owners');
     }
 };

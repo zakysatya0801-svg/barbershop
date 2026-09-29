@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('barbers', function (Blueprint $table) {
             $table->id('barber_id');
-            $table->foreignId('shop_id')->constrained('go_barbershops', 'shop_id')->onDelete('cascade');
+            $table->foreignId('shop_id')->constrained('go_barbershops', 'go_barbershop_id')->onDelete('cascade');
             $table->string('barber_name');
             $table->string('specialty');
-            $table->longText('photo')->nullable;
+            $table->longText('photo')->nullable();
              $table->timestamps();
         });
     }

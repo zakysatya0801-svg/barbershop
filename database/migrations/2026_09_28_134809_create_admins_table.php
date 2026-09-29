@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('admins', function (Blueprint $table) {//membuat table admins
             $table->id('admin_id');
             $table->foreignId('user_id')//menghubungkan dengan tabel user id
-            ->constrained('user', 'id')//Menentukan bahwa user_id merupakan foreign key yang mengacu kepada
+            ->constrained('users', 'user_id')//Menentukan bahwa user_id merupakan foreign key yang mengacu kepada
             ->onDelete('cascade');
             $table->string('role');//menentukan role admins
             $table->timestamps();

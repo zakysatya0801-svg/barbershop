@@ -13,14 +13,19 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id('favorite_id');
-            $table->foreignId('costumer_id')
-                ->constrained('costumers', 'costumer_id')
+            $table->foreignId('customer_id')
+                ->constrained('customers', 'customer_id')
                 ->onDelete('cascade');
             $table->foreignId('shop_id')
-                ->constrained('shops', 'shop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
                 ->onDelete('cascade');
-                
+
             $table->timestamps();
+
+            $table->unique([
+                'customer_id',
+                'shop_id'
+            ]);
         });
     }
 
