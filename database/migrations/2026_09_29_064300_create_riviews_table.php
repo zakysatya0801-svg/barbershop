@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('favorites', function (Blueprint $table) {
-            $table->id('favorite_id');
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id('review_id');
 
             $table->foreignId('costumer_id')
                 ->constrained('costumers', 'costumer_id')
@@ -22,9 +22,18 @@ return new class extends Migration
                 ->constrained('shops', 'shop_id')
                 ->onDelete('cascade');
 
-            $table->unique(['costumer_id', 'shop_id']);
+            $table->foreignId('booking_id')
+                ->constrained('bookings', 'booking_id')
+                ->onDelete('cascade');
+
+            $table->tinyInteger('rating');
+
+            $table->text('comment')->nullable();
 
             $table->timestamps();
+
+            // Satu booking hanya boleh memiliki satu review
+            $table->unique('booking_id');
         });
     }
 
@@ -33,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('reviews');
     }
 };
