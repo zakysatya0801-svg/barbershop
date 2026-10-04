@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
 return new class extends Migration
 {
     /**
@@ -17,9 +16,13 @@ return new class extends Migration
             $table->string('nama_owners');
             $table->string('email')->unique();
             $table->string('phonr');
-            $table->foreignId('admin_id')
-            ->constrained('admins', 'id')
-            ->onDelete('cascade');
+
+            $table->unsignedBigInteger('admin_id');
+
+            $table->foreign('admin_id')
+                ->references('admin_id')
+                ->on('admins')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -30,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins_owners');
+        Schema::dropIfExists('owners');
     }
 };

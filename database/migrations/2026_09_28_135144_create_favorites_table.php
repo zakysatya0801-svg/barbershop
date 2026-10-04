@@ -6,27 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id('favorite_id');
-            $table->foreignId('costumer_id')
-                ->constrained('costumers', 'costumer_id')
+
+            // Relasi ke tabel customers
+            $table->foreignId('customer_id')
+                ->constrained('customers', 'customer_id')
                 ->onDelete('cascade');
+
+            // Relasi ke tabel go_barbershops
             $table->foreignId('shop_id')
-                ->constrained('shops', 'shop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
                 ->onDelete('cascade');
-                
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('favorites');

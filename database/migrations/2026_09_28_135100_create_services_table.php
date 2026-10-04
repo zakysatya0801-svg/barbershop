@@ -6,26 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id('service_id');
-            $table->foreignId('shop_id')->constrained('go_barber_shops', 'shop_id')->onDelete('cascade');
+
+            // Relasi ke tabel go_barbershops
+            $table->unsignedBigInteger('shop_id');
+
+            $table->foreign('shop_id')
+                ->references('go_barbershop_id')
+                ->on('go_barbershops')
+                ->onDelete('cascade');
+
             $table->string('service_name');
-            $table->longText('photo')->nullable;
+            $table->longText('photo')->nullable();
             $table->decimal('price', 12, 2);
             $table->integer('duration');
+
             $table->timestamps();
-   
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('services');

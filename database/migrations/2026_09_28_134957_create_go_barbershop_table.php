@@ -6,35 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('go_barbershops', function (Blueprint $table) {
             $table->id('go_barbershop_id');
-              $table->foreignId('owner_id')
-            ->constrained('owners', 'id')
-            ->onDelete('cascade');
-               $table->foreignId('location_id')
-            ->nullable()
-            ->after('owner_id')
-            ->constrained('locations', 'location_id')
-            ->onDelete('set null');
+
+            // Relasi ke tabel owners
+            $table->unsignedBigInteger('owner_id');
+            $table->foreign('owner_id')
+                ->references('owner_id')
+                ->on('owners')
+                ->onDelete('cascade');
+
+            // Relasi ke tabel locations (nullable)
+            $table->unsignedBigInteger('location_id')->nullable();
+            $table->foreign('location_id')
+                ->references('location_id')
+                ->on('locations')
+                ->nullOnDelete();
+
             $table->string('barbershop_name');
             $table->text('description')->nullable();
-            $table->fullText('photo')->nullable();
+            $table->text('photo')->nullable();
             $table->time('open_time');
-            $table->time('close_time');    
+            $table->time('close_time');
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('go_barbershop');
+        Schema::dropIfExists('go_barbershops');
     }
 };
