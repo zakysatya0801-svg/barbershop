@@ -13,19 +13,22 @@ return new class extends Migration
     {
         Schema::create('go_barbershops', function (Blueprint $table) {
             $table->id('go_barbershop_id');
-              $table->foreignId('owner_id')
-            ->constrained('owners', 'id')
-            ->onDelete('cascade');
-               $table->foreignId('location_id')
-            ->nullable()
-            ->after('owner_id')
-            ->constrained('locations', 'location_id')
-            ->onDelete('set null');
+
+            $table->foreignId('owner_id')
+                ->constrained('owners', 'owner_id')
+                ->onDelete('cascade');
+
+            $table->foreignId('location_id')
+                ->nullable()
+                ->constrained('locations', 'location_id')
+                ->nullOnDelete();
+
             $table->string('barbershop_name');
             $table->text('description')->nullable();
-            $table->fullText('photo')->nullable();
+            $table->string('photo')->nullable();
             $table->time('open_time');
-            $table->time('close_time');    
+            $table->time('close_time');
+
             $table->timestamps();
         });
     }
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('go_barbershop');
+        Schema::dropIfExists('go_barbershops');
     }
 };
