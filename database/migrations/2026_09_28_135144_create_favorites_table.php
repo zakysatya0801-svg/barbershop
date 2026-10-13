@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,31 +7,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id('favorite_id');
 
-            $table->foreignId('costumer_id')
-                ->constrained('costumers', 'costumer_id')
-                ->onDelete('cascade');
+            $table->foreignId('customer_id')
+                ->constrained('customers', 'customer_id')
+                ->cascadeOnDelete();
 
-            $table->foreignId('shop_id')
-                ->constrained('shops', 'shop_id')
-                ->onDelete('cascade');
+            $table->foreignId('go_barbershop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
+                ->cascadeOnDelete();
 
-            $table->unique(['costumer_id', 'shop_id']);
+            $table->unique(['customer_id', 'go_barbershop_id']);
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('favorites');

@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id('service_id');
-            $table->foreignId('shop_id')->constrained('go_barber_shops', 'shop_id')->onDelete('cascade');
+           $table->foreignId('go_barbershop_id')
+    ->constrained('go_barbershops', 'go_barbershop_id')
+    ->cascadeOnDelete();
             $table->string('service_name');
             $table->longText('photo')->nullable;
             $table->decimal('price', 12, 2);

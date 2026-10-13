@@ -6,28 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id('review_id');
 
-            $table->foreignId('costumer_id')
-                ->constrained('costumers', 'costumer_id')
-                ->onDelete('cascade');
+            $table->foreignId('customer_id')
+                ->constrained('customers', 'customer_id')
+                ->cascadeOnDelete();
 
-            $table->foreignId('shop_id')
-                ->constrained('shops', 'shop_id')
-                ->onDelete('cascade');
+            $table->foreignId('go_barbershop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
+                ->cascadeOnDelete();
 
             $table->foreignId('booking_id')
                 ->constrained('bookings', 'booking_id')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
 
             $table->tinyInteger('rating');
-
             $table->text('comment')->nullable();
 
             $table->timestamps();
@@ -37,9 +33,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('reviews');
