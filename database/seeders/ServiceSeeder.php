@@ -17,7 +17,7 @@ class ServiceSeeder extends Seeder
 
         DB::table('services')->insert([
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'service_name' => 'Classic Haircut',
                 'photo' => 'classic-haircut.jpg',
                 'price' => 25000,
@@ -31,14 +31,14 @@ class ServiceSeeder extends Seeder
                 'duration' => 45,
             ],
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'service_name' => 'Hair Wash',
                 'photo' => 'hair-wash.jpg',
                 'price' => 15000,
                 'duration' => 15,
             ],
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'service_name' => 'Haircut + Hair Wash',
                 'photo' => 'haircut-wash.jpg',
                 'price' => 45000,
