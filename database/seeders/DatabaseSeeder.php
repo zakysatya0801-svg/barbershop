@@ -8,7 +8,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. User, Admin, Owner
+        // 1. User, Admin, dan Owner
         $this->call(UserSeeder::class);
 
         // 2. Location
