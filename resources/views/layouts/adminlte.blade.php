@@ -31,9 +31,19 @@
                 <i class="bi bi-list"></i>
             </button>
 
-            <span class="navbar-text ms-auto fw-semibold">
-                GoBarberShop
-            </span>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text fw-semibold">
+                    GoBarberShop
+                </span>
+
+                <!-- Logout menggunakan POST agar sesi tidak berakhir melalui tautan GET. -->
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </nav>
 

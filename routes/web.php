@@ -1,8 +1,9 @@
 
 <?php
 
-// Mengimpor Route Laravel dan controller autentikasi.
+// Mengimpor controller autentikasi.
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
 // Menampilkan halaman utama bawaan Laravel.
@@ -14,17 +15,16 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])
     ->name('login');
 
-// Memproses email dan password dari form login.
+// Memproses login.
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.process');
 
-// Mengakhiri sesi login pengguna.
+// Mengakhiri sesi login.
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// Menampilkan dashboard Admin setelah pengguna login.
-// Pembatasan berdasarkan role akan ditambahkan berikutnya.
+// Dashboard hanya boleh diakses oleh Admin.
 Route::view('/admin/dashboard', 'pages.admin.dashboard')
-    ->middleware('auth')
+    ->middleware(['auth', EnsureAdmin::class])
     ->name('admin.dashboard');
