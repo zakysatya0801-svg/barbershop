@@ -1,26 +1,39 @@
 <?php
 
+use App\Support\Routing\PortalRoutes;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Support\Routing\PortalRoutes;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
+        // Mendaftarkan route web utama.
         web: __DIR__.'/../routes/web.php',
+
+        // Mendaftarkan perintah Artisan.
         commands: __DIR__.'/../routes/console.php',
+
+        // Mendaftarkan endpoint pemeriksaan kesehatan.
         health: '/up',
-        then: function () {
-            // HARUS DI DALAM FUNGSI THEN INI
+
+        // Mendaftarkan route tambahan.
+        then: function (): void {
+            // Route khusus client dengan middleware web.
+            Route::middleware('web')
+                ->group(base_path('routes/client.php'));
+
+            // Mendaftarkan route portal.
             PortalRoutes::register();
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-    $middleware->alias([
-        'role' => \App\Http\Middleware\EnsureUserHasRole::class,
-    ]);
-})
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })
     ->create();
+

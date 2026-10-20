@@ -19,13 +19,19 @@ class Owner extends Model
         'admin_id',
     ];
 
+    // Menghubungkan Owner dengan Admin melalui admin_id.
     public function admin(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
     }
 
+    // Mengambil semua barbershop yang dimiliki Owner ini.
     public function goBarberShops(): HasMany
     {
-        return $this->hasMany(GoBarberShop::class, 'owner_id', 'owner_id');
+        return $this->hasMany(
+            GoBarberShop::class,
+            'owner_id',
+            'owner_id'
+        );
     }
 }

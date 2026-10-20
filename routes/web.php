@@ -1,17 +1,33 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
-// Route halaman utama Laravel.
+// Menampilkan halaman utama.
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
 // Route halaman booking barbershop.
-Route::get('/booking/{shop}', function ($shop) {
+Route::get('/booking/{shop}', function (string $shop) {
     return 'Halaman Booking Barbershop: ' . e($shop);
 })->name('booking');
 
-// Route dashboard AdminLTE.
+// Menampilkan halaman login Admin dan Owner.
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
+
+// Memproses login.
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.process');
+
+// Mengakhiri sesi login.
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+// Dashboard hanya boleh diakses oleh Admin.
 Route::view('/admin/dashboard', 'pages.admin.dashboard')
+    ->middleware(['auth', EnsureAdmin::class])
     ->name('admin.dashboard');

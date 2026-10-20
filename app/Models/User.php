@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,11 +20,18 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    // Menyesuaikan primary key dengan struktur tabel users.
     protected $primaryKey = 'user_id';
 
+    // Menghubungkan User dengan data Admin untuk memperoleh role.
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class, 'user_id', 'user_id');
+    }
+
+    // Mengatur konversi atribut model.
     protected function casts(): array
     {
         return [
@@ -35,7 +42,7 @@ class User extends Authenticatable
 
     public function hasRole(string $role): bool
     {
-        return $this->role === $role && $this->isActive();
+        return $this->admin?->role === $role && $this->isActive();
     }
 
     public function isAdmin(): bool
