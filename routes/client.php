@@ -8,7 +8,7 @@ Route::get('/dashboard/{shop}', function (string $shop) {
     return 'Dashboard Client Barbershop: ' . e($shop);
 })->name('dashboard');
 
-// Dashboard khusus Owner yang sudah login.
+// Dashboard utama untuk Owner yang sudah login.
 Route::get('/client/dashboard', function () {
     // Mengambil pengguna yang sedang login.
     $user = request()->user();
@@ -38,8 +38,29 @@ Route::get('/client/dashboard', function () {
         compact('owner', 'barbershops')
     );
 })
+    // Membatasi dashboard untuk pengguna login dengan role Owner.
     ->middleware([
         'auth',
         \App\Http\Middleware\EnsureClientOwner::class,
     ])
     ->name('client.dashboard');
+
+// Dashboard untuk satu barbershop tertentu.
+Route::get(
+    '/client/barbershops/{barbershop}/dashboard',
+    function (\App\Models\GoBarberShop $barbershop) {
+        // Mengambil konteks barbershop yang divalidasi middleware.
+        $context = app(\App\Support\Tenancy\TenantContext::class);
+
+        // Mengembalikan informasi untuk pengujian middleware.
+        return response()->json([
+            'message' => 'Konteks barbershop berhasil diakses.',
+            'barbershop_id' => $context->id(),
+            'barbershop_name' => $barbershop->barbershop_name,
+        ]);
+    }
+)
+    // Memeriksa login dan kepemilikan barbershop.
+    ->middleware(['auth', 'tenant'])
+    ->whereNumber('barbershop')
+    ->name('client.barbershops.dashboard');
