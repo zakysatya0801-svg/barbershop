@@ -13,10 +13,14 @@ class EnsureAdmin
     {
         $user = $request->user();
 
-        if (! $user || $user->admin?->role !== 'admin') {
-            abort(403, 'Anda tidak memiliki akses sebagai Admin.');
+        if ($user?->hasRole('admin')) {
+            return $next($request);
         }
 
-        return $next($request);
+        if ($user?->hasRole('owner')) {
+            return redirect()->route('client.dashboard');
+        }
+
+        abort(403, 'Anda tidak memiliki akses sebagai Admin.');
     }
 }

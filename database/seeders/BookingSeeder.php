@@ -14,7 +14,7 @@ class BookingSeeder extends Seeder
         $service = DB::table('services')->first();
         $barber = DB::table('barbers')->first();
 
-        if (!$customer || !$shop || !$service || !$barber) {
+        if (! $customer || ! $shop || ! $service || ! $barber) {
             throw new \Exception(
                 'Customer, shop, service, atau barber belum tersedia.'
             );
@@ -22,7 +22,7 @@ class BookingSeeder extends Seeder
 
         DB::table('bookings')->insert([
             'customer_id' => $customer->customer_id,
-            'shop_id' => $shop->go_barbershop_id,
+            'go_barbershop_id' => $shop->go_barbershop_id,
             'service_id' => $service->service_id,
             'barber_id' => $barber->barber_id,
             'booking_date' => now()->addDay()->toDateString(),

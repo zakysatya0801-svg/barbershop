@@ -41,6 +41,10 @@ final class SetTenantContext
         $admin = $user->admin;
 
         if (! $admin || $admin->role !== 'owner') {
+            if ($user->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
+            }
+
             abort(403, 'Akses khusus Owner.');
         }
 
@@ -53,7 +57,7 @@ final class SetTenantContext
 
         // Memastikan barbershop merupakan milik Owner yang login.
         if ((int) $barbershop->owner_id !== (int) $owner->owner_id) {
-            abort(403, 'Anda tidak memiliki akses ke barbershop ini.');
+            return redirect()->route('client.dashboard');
         }
 
         // Menyimpan konteks barbershop selama request berlangsung.

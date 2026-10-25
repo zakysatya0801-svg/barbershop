@@ -77,14 +77,4 @@
         </div>
     </div>
 
-    {{-- Tombol Logout Admin. --}}
-    <div class="d-flex justify-content-end mt-4">
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-                Logout
-            </button>
-        </form>
-    </div>
-
 @endsection

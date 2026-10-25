@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureClientOwner;
 use Illuminate\Support\Facades\Route;
 
 // Menampilkan halaman utama.
@@ -11,8 +11,15 @@ Route::get('/', function () {
 
 // Route halaman booking barbershop.
 Route::get('/booking/{shop}', function (string $shop) {
-    return 'Halaman Booking Barbershop: ' . e($shop);
+    return 'Halaman Booking Barbershop: '.e($shop);
 })->name('booking');
+
+// Menampilkan dashboard berdasarkan nama toko.
+Route::get('/dashboard/{shop}', function (string $shop) {
+    return 'Dashboard Client Barbershop: '.e($shop);
+})
+    ->middleware(['auth', EnsureClientOwner::class])
+    ->name('dashboard');
 
 // Menampilkan halaman login Admin dan Owner.
 Route::get('/login', [AuthController::class, 'showLogin'])
@@ -26,8 +33,3 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
-
-// Dashboard hanya boleh diakses oleh Admin.
-Route::view('/admin/dashboard', 'pages.admin.dashboard')
-    ->middleware(['auth', EnsureAdmin::class])
-    ->name('admin.dashboard');

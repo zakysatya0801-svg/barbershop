@@ -16,8 +16,13 @@ class EnsureClientOwner
         // Mengambil akun pengguna yang sedang login.
         $user = $request->user();
 
+        // Mengarahkan Admin ke dashboard yang sesuai dengan rolenya.
+        if ($user?->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
         // Menolak akses jika akun tidak memiliki role owner.
-        if (! $user || $user->admin?->role !== 'owner') {
+        if (! $user || ! $user->hasRole('owner')) {
             abort(403, 'Anda tidak memiliki akses sebagai client.');
         }
 

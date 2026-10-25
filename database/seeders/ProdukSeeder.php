@@ -11,7 +11,7 @@ class ProdukSeeder extends Seeder
     {
         $shop = DB::table('go_barbershops')->first();
 
-        if (!$shop) {
+        if (! $shop) {
             throw new \Exception(
                 'Data go_barbershop belum tersedia.'
             );
@@ -19,14 +19,14 @@ class ProdukSeeder extends Seeder
 
         DB::table('produks')->insert([
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'name_product' => 'Pomade Premium',
                 'price' => 75000,
                 'description' => 'Pomade dengan daya tahan kuat untuk styling rambut.',
                 'photo' => 'pomade.jpg',
             ],
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'name_product' => 'Hair Tonic',
                 'price' => 50000,
                 'description' => 'Hair tonic untuk membantu merawat rambut.',

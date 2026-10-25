@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use LogicException;
 
 class Booking extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'bookings';
 
     protected $primaryKey = 'booking_id';
@@ -17,13 +21,23 @@ class Booking extends Model
     // service_id disesuaikan dengan nama kolom database.
     protected $fillable = [
         'customer_id',
-        'go_barbershop_id',
         'service_id',
         'barber_id',
         'booking_date',
         'time_slot',
         'status',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Booking $booking): void {
+            if (! $booking->service()->exists() || ! $booking->barber()->exists()) {
+                throw new LogicException(
+                    'Layanan dan barber harus berasal dari barbershop aktif.'
+                );
+            }
+        });
+    }
 
     // Menghubungkan booking dengan barbershop terkait.
     public function goBarberShop(): BelongsTo

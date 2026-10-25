@@ -15,10 +15,22 @@ class EnsureUserHasRole
     ): Response {
         $user = $request->user();
 
-        if ($user === null || ! $user->hasRole($role)) {
+        if ($user === null) {
             abort(403, 'Akses ditolak: Anda tidak memiliki hak akses.');
         }
 
-        return $next($request);
+        if ($user->hasRole($role)) {
+            return $next($request);
+        }
+
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->hasRole('owner')) {
+            return redirect()->route('client.dashboard');
+        }
+
+        abort(403, 'Akses ditolak: Anda tidak memiliki hak akses.');
     }
 }

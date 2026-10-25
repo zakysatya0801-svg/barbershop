@@ -30,7 +30,7 @@
                 </h2>
 
                 <p class="text-secondary mb-0 mt-2">
-                    Login Admin dan Owner
+                    Masuk ke akun GoBarberShop
                 </p>
             </div>
 

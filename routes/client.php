@@ -1,12 +1,10 @@
 <?php
 
+use App\Http\Middleware\EnsureClientOwner;
+use App\Models\GoBarberShop;
 use App\Models\Owner;
+use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Route;
-
-// Dashboard berdasarkan nama toko.
-Route::get('/dashboard/{shop}', function (string $shop) {
-    return 'Dashboard Client Barbershop: ' . e($shop);
-})->name('dashboard');
 
 // Dashboard utama untuk Owner yang sudah login.
 Route::get('/client/dashboard', function () {
@@ -18,7 +16,7 @@ Route::get('/client/dashboard', function () {
 
     // Memastikan pengguna memiliki role Owner.
     abort_if(
-        !$admin || $admin->role !== 'owner',
+        ! $admin || $admin->role !== 'owner',
         403,
         'Akses ditolak.'
     );
@@ -27,7 +25,7 @@ Route::get('/client/dashboard', function () {
     $owner = Owner::where('admin_id', $admin->admin_id)->first();
 
     // Memastikan profil Owner tersedia.
-    abort_if(!$owner, 403, 'Profil Owner tidak ditemukan.');
+    abort_if(! $owner, 403, 'Profil Owner tidak ditemukan.');
 
     // Mengambil seluruh barbershop milik Owner.
     $barbershops = $owner->goBarberShops()->get();
@@ -41,16 +39,16 @@ Route::get('/client/dashboard', function () {
     // Membatasi dashboard untuk pengguna login dengan role Owner.
     ->middleware([
         'auth',
-        \App\Http\Middleware\EnsureClientOwner::class,
+        EnsureClientOwner::class,
     ])
     ->name('client.dashboard');
 
 // Dashboard untuk satu barbershop tertentu.
 Route::get(
     '/client/barbershops/{barbershop}/dashboard',
-    function (\App\Models\GoBarberShop $barbershop) {
+    function (GoBarberShop $barbershop) {
         // Mengambil konteks barbershop yang divalidasi middleware.
-        $context = app(\App\Support\Tenancy\TenantContext::class);
+        $context = app(TenantContext::class);
 
         // Mengembalikan informasi untuk pengujian middleware.
         return response()->json([

@@ -40,11 +40,15 @@ class User extends Authenticatable
         ];
     }
 
+    // Memastikan pengguna memiliki role yang sesuai.
+    // Status aktif belum diperiksa karena tabel users tidak memiliki kolom status.
     public function hasRole(string $role): bool
     {
-        return $this->admin?->role === $role && $this->isActive();
+        return $this->admin?->role === $role;
     }
 
+    // Catatan: pemeriksaan status akun belum diterapkan karena kolom status
+    // belum tersedia pada tabel users.
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');

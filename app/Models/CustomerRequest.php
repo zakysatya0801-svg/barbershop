@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomerRequest extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'requests';
 
     protected $primaryKey = 'request_id';
@@ -17,6 +20,11 @@ class CustomerRequest extends Model
         'massage',
         'status',
     ];
+
+    protected function tenantRelationship(): ?string
+    {
+        return 'booking';
+    }
 
     public function booking(): BelongsTo
     {

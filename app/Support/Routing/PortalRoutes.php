@@ -20,7 +20,7 @@ class PortalRoutes
         $clientRoutes = base_path('routes/client.php');
 
         if (file_exists($clientRoutes)) {
-            Route::middleware(['web', 'auth', 'verified', 'role:client'])
+            Route::middleware(['web', 'auth', 'role:owner'])
                 ->prefix('client/{shop}')
                 ->as('client.')
                 ->group($clientRoutes);
@@ -29,7 +29,7 @@ class PortalRoutes
         $adminRoutes = base_path('routes/admin.php');
 
         if (file_exists($adminRoutes)) {
-            Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+            Route::middleware(['web', 'auth', 'role:admin'])
                 ->prefix('admin')
                 ->as('admin.')
                 ->group($adminRoutes);

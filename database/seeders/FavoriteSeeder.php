@@ -12,7 +12,7 @@ class FavoriteSeeder extends Seeder
         $customer = DB::table('customers')->first();
         $shop = DB::table('go_barbershops')->first();
 
-        if (!$customer || !$shop) {
+        if (! $customer || ! $shop) {
             throw new \Exception(
                 'Customer atau go_barbershop belum tersedia.'
             );
@@ -20,7 +20,7 @@ class FavoriteSeeder extends Seeder
 
         DB::table('favorites')->insert([
             'customer_id' => $customer->customer_id,
-            'shop_id' => $shop->go_barbershop_id,
+            'go_barbershop_id' => $shop->go_barbershop_id,
         ]);
     }
 }

@@ -11,7 +11,7 @@ class ServiceSeeder extends Seeder
     {
         $shop = DB::table('go_barbershops')->first();
 
-        if (!$shop) {
+        if (! $shop) {
             throw new \Exception('Data go_barbershop belum tersedia.');
         }
 
@@ -24,7 +24,7 @@ class ServiceSeeder extends Seeder
                 'duration' => 30,
             ],
             [
-                'shop_id' => $shop->go_barbershop_id,
+                'go_barbershop_id' => $shop->go_barbershop_id,
                 'service_name' => 'Fade Haircut',
                 'photo' => 'fade-haircut.jpg',
                 'price' => 35000,

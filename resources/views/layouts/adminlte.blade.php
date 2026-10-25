@@ -101,6 +101,19 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="nav-link text-start w-100 border-0 bg-transparent text-danger"
+                            >
+                                <i class="nav-icon bi bi-box-arrow-right"></i>
+                                <p>Logout</p>
+                            </button>
+                        </form>
+                    </li>
+
                 </ul>
             </nav>
         </div>

@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Barber extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'barbers';
 
     protected $primaryKey = 'barber_id';
 
     // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
-        'go_barbershop_id',
         'barber_name',
         'specialty',
         'photo',

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GoBarberShop extends Model
 {
@@ -29,5 +30,14 @@ class GoBarberShop extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'location_id');
+    }
+
+    public function commissionSchemes(): HasMany
+    {
+        return $this->hasMany(
+            CommissionScheme::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
     }
 }

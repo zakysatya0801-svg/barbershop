@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Service extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'services';
 
     protected $primaryKey = 'service_id';
 
     // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
-        'go_barbershop_id',
         'service_name',
         'photo',
         'price',
