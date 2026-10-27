@@ -4,10 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
-// Menampilkan halaman utama.
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Menampilkan halaman utama (home).
+Route::view('/', 'home.index')->name('home');
 
 // Route halaman booking barbershop.
 Route::get('/booking/{shop}', function (string $shop) {
@@ -31,3 +29,8 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::view('/admin/dashboard', 'pages.admin.dashboard')
     ->middleware(['auth', EnsureAdmin::class])
     ->name('admin.dashboard');
+// Halaman menu sidebar owner (sementara masih placeholder).
+Route::view('/barbershop', 'base-client.barbershop')->name('owner.barbershop');
+Route::view('/booking', 'base-client.booking')->name('owner.booking');
+Route::view('/barber', 'base-client.barber')->name('owner.barber');
+Route::view('/profil', 'base-client.profil')->name('owner.profil');
