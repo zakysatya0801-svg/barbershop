@@ -1,4 +1,4 @@
-@extends('layouts.client')
+@extends('layouts.public')
 
 @section('content')
     @include('home.components.hero')

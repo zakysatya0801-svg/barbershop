@@ -1,8 +1,6 @@
-<h1 class="h2 mb-3">Dashboard GoBarberShop</h1>
-
-<div class="card mb-3">
-    <div class="card-body">
-        <h2 class="h4 fw-bold">Selamat Datang di GoBarberShop!</h2>
-        <p class="mb-0">Kelola data barbershop, barber, layanan, dan booking melalui dashboard ini.</p>
-    </div>
-</div>
+<section class="p-4 p-md-5 mb-4 rounded-3 bg-white shadow-sm">
+    <h1 class="display-5 fw-bold">Selamat Datang di GoBarberShop</h1>
+    <p class="lead mb-0">
+        Temukan barbershop, barber, dan layanan yang sesuai dengan kebutuhanmu.
+    </p>
+</section>
