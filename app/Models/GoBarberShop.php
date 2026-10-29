@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GoBarberShop extends Model
 {
@@ -21,6 +22,25 @@ class GoBarberShop extends Model
         'open_time',
         'close_time',
     ];
+    
+public function qrTokens(): HasMany
+{
+    return $this->hasMany(BarbershopQrToken::class);
+}
+
+public function activeToken(): HasOne
+{
+    return $this->hasOne(BarbershopQrToken::class)
+        ->ofMany('issued_at', 'max', function ($query) {
+            $query->where('status', 'active')
+                ->whereNull('revoked_at')
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+        });
+}
+
 
     public function owner(): BelongsTo
     {
