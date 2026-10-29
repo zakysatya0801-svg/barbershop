@@ -205,14 +205,30 @@
             <div>{{ $owner->nama_owners ?? 'Owner' }}</div>
         </div>
 
-        <a href="{{ route('client.dashboard') }}" class="app-menu active">
+        <a href="{{ route('client.dashboard') }}"
+           class="app-menu {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
             Dashboard
         </a>
 
-        <a href="#" class="app-menu">Barbershop</a>
-        <a href="#" class="app-menu">Booking</a>
-        <a href="#" class="app-menu">Barber</a>
-        <a href="#" class="app-menu">Profil</a>
+        <a href="{{ route('owner.barbershop') }}"
+           class="app-menu {{ request()->routeIs('owner.barbershop') ? 'active' : '' }}">
+            Barbershop
+        </a>
+
+        <a href="{{ route('owner.booking') }}"
+           class="app-menu {{ request()->routeIs('owner.booking') ? 'active' : '' }}">
+            Booking
+        </a>
+
+        <a href="{{ route('owner.barber') }}"
+           class="app-menu {{ request()->routeIs('owner.barber') ? 'active' : '' }}">
+            Barber
+        </a>
+
+        <a href="{{ route('owner.profil') }}"
+           class="app-menu {{ request()->routeIs('owner.profil') ? 'active' : '' }}">
+            Profil
+        </a>
 
         <form action="{{ route('logout') }}" method="POST">
             @csrf
