@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\ServiceProvider;
+use App\Support\ShopContext;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,10 +15,15 @@ class AppServiceProvider extends ServiceProvider
             TenantContext::class,
             fn (): TenantContext => new TenantContext,
         );
+        $this->app->scoped(
+            ShopContext::class,
+            fn (): ShopContext => new ShopContext,
+        );
     }
 
     public function boot(): void
     {
         //
     }
+    
 }

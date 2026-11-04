@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class GoBarberShop extends Model
 {
     protected $table = 'go_barbershops';
@@ -21,13 +21,26 @@ class GoBarberShop extends Model
         'close_time',
     ];
 
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(Owner::class, 'owner_id', 'owner_id');
-    }
-
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'location_id');
     }
+
+   public function services(): HasMany
+{
+    return $this->hasMany(
+        Service::class,
+        'shop_id',
+        'go_barbershop_id'
+    );
+}
+
+    public function barbers(): HasMany
+{
+    return $this->hasMany(
+        Barber::class,
+        'shop_id',
+        'go_barbershop_id'
+    );
+}
 }

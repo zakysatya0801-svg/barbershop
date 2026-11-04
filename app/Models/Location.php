@@ -3,21 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Location extends Model
 {
     protected $table = 'locations';
-
-    protected $primaryKey = 'location_id';
+    protected $primaryKey = 'location_id'; // sesuaikan jika di database primary key-nya 'location_id'
 
     protected $fillable = [
         'city',
         'province',
     ];
-
-    public function goBarberShops(): HasMany
-    {
-        return $this->hasMany(GoBarberShop::class, 'location_id', 'location_id');
-    }
 }

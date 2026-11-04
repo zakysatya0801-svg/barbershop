@@ -13,11 +13,11 @@ class Owner extends Model
     protected $primaryKey = 'owner_id';
 
     protected $fillable = [
-        'nama_owners',
-        'email',
-        'phone',
-        'admin_id',
-    ];
+    'nama_owners',
+    'email',
+    'phonr',
+    'admin_id',
+];
 
     // Menghubungkan Owner dengan Admin melalui admin_id.
     public function admin(): BelongsTo

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 #[Fillable([
     'name',
     'email',
@@ -59,4 +59,16 @@ class User extends Authenticatable
     {
         return $this->status === 'active';
     }
+    
+public function owner(): HasOneThrough
+{
+    return $this->hasOneThrough(
+        Owner::class,
+        Admin::class,
+        'user_id',
+        'admin_id',
+        'user_id',
+        'admin_id'
+    );
+}
 }
