@@ -15,14 +15,14 @@ class Barber extends Model
 
     protected $primaryKey = 'barber_id';
 
-    // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
+        'go_barbershop_id',
         'barber_name',
         'specialty',
         'photo',
     ];
 
-    // Menghubungkan barber dengan barbershop tempatnya bekerja.
+    // Relasi barber dengan barbershop
     public function goBarberShop(): BelongsTo
     {
         return $this->belongsTo(
@@ -32,7 +32,7 @@ class Barber extends Model
         );
     }
 
-    // Mengambil seluruh booking yang ditangani barber ini.
+    // Relasi booking barber
     public function bookings(): HasMany
     {
         return $this->hasMany(

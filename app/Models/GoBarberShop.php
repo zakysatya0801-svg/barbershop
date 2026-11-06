@@ -22,29 +22,23 @@ class GoBarberShop extends Model
         'open_time',
         'close_time',
     ];
-    
-public function qrTokens(): HasMany
-{
-    return $this->hasMany(BarbershopQrToken::class);
-}
 
-public function activeToken(): HasOne
-{
-    return $this->hasOne(BarbershopQrToken::class)
-        ->ofMany('issued_at', 'max', function ($query) {
-            $query->where('status', 'active')
-                ->whereNull('revoked_at')
-                ->where(function ($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-        });
-}
-
-
-    public function owner(): BelongsTo
+    public function qrTokens(): HasMany
     {
-        return $this->belongsTo(Owner::class, 'owner_id', 'owner_id');
+        return $this->hasMany(BarbershopQrToken::class);
+    }
+
+    public function activeToken(): HasOne
+    {
+        return $this->hasOne(BarbershopQrToken::class)
+            ->ofMany('issued_at', 'max', function ($query) {
+                $query->where('status', 'active')
+                    ->whereNull('revoked_at')
+                    ->where(function ($query) {
+                        $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    });
+            });
     }
 
     public function location(): BelongsTo
@@ -56,6 +50,33 @@ public function activeToken(): HasOne
     {
         return $this->hasMany(
             CommissionScheme::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(
+            Service::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
+    }
+
+    public function barbers(): HasMany
+    {
+        return $this->hasMany(
+            Barber::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(
+            Review::class,
             'go_barbershop_id',
             'go_barbershop_id'
         );

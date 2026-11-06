@@ -197,6 +197,17 @@ class AuthControllerTest extends TestCase
             ->assertDontSee('Barbershop Orang Lain');
     }
 
+    public function test_owner_can_open_the_owner_barbershop_page(): void
+    {
+        $ownerUser = $this->createUserWithRole('owner');
+        $owner = $this->createOwnerProfile($ownerUser);
+        $this->createBarbershop($owner, 'Barbershop Saya');
+
+        $this->actingAs($ownerUser)
+            ->get('/owner/barbershop')
+            ->assertOk();
+    }
+
     public function test_owner_is_redirected_to_their_dashboard_from_another_owners_shop_dashboard(): void
     {
         $ownerUser = $this->createUserWithRole('owner');
