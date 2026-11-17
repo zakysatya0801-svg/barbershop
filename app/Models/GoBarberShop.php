@@ -23,36 +23,44 @@ class GoBarberShop extends Model
         'close_time',
     ];
 
+    // Relasi QR Token
     public function qrTokens(): HasMany
     {
         return $this->hasMany(
-        BarbershopQrToken::class,
-        'go_barbershop_id',
-        'go_barbershop_id'
+            BarbershopQrToken::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
         );
     }
 
+    // Token aktif
     public function activeToken(): HasOne
     {
         return $this->hasOne(
-        BarbershopQrToken::class,
-        'go_barbershop_id',
-        'go_barbershop_id'
+            BarbershopQrToken::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
         )->ofMany('issued_at', 'max', function ($query) {
-        $query->where('status', 'active')
-            ->whereNull('revoked_at')
-            ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            });
+            $query->where('status', 'active')
+                ->whereNull('revoked_at')
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
         });
     }
 
+    // Relasi lokasi
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'location_id', 'location_id');
+        return $this->belongsTo(
+            Location::class,
+            'location_id',
+            'location_id'
+        );
     }
 
+    // Relasi skema komisi
     public function commissionSchemes(): HasMany
     {
         return $this->hasMany(
@@ -62,24 +70,29 @@ class GoBarberShop extends Model
         );
     }
 
+    // Relasi layanan
+    // Foreign key services = shop_id
     public function services(): HasMany
     {
         return $this->hasMany(
             Service::class,
-            'go_barbershop_id',
+            'shop_id',
             'go_barbershop_id'
         );
     }
 
+    // Relasi barber
+    // Foreign key barbers = shop_id
     public function barbers(): HasMany
     {
         return $this->hasMany(
             Barber::class,
-            'go_barbershop_id',
+            'shop_id',
             'go_barbershop_id'
         );
     }
 
+    // Relasi ulasan
     public function reviews(): HasMany
     {
         return $this->hasMany(

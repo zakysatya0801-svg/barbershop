@@ -14,25 +14,25 @@ class Service extends Model
 
     protected $primaryKey = 'service_id';
 
-    // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
+        'shop_id',
         'service_name',
         'photo',
         'price',
         'duration',
     ];
 
-    // Menghubungkan layanan dengan barbershop pemiliknya.
+    // Menghubungkan layanan dengan barbershop
     public function goBarberShop(): BelongsTo
     {
         return $this->belongsTo(
             GoBarberShop::class,
-            'go_barbershop_id',
+            'shop_id',
             'go_barbershop_id'
         );
     }
 
-    // Mengatur tipe data harga dan durasi layanan.
+    // Mengatur tipe data
     protected function casts(): array
     {
         return [
