@@ -2,14 +2,17 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarbershopQrScanController;
 use App\Http\Controllers\ShopDetailController;
 use App\Http\Controllers\ShopExploreController;
-use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureClientOwner;
 use App\Http\Middleware\ResolveShopContext;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'customer.home.index')->name('home');
+
+Route::get('/qr/{token}', BarbershopQrScanController::class)
+    ->name('barbershops.qr.scan');
 
 Route::get('/booking/{shop}', function (string $shop) {
     return 'Halaman Booking Barbershop: '.e($shop);
@@ -36,10 +39,6 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
-
-Route::view('/admin/dashboard', 'pages.admin.dashboard')
-    ->middleware(['auth', EnsureAdmin::class])
-    ->name('admin.dashboard');
 
 Route::middleware(['auth', ResolveShopContext::class])
     ->prefix('owner')

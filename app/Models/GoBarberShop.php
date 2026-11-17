@@ -23,21 +23,28 @@ class GoBarberShop extends Model
         'close_time',
     ];
 
+    // /Alasannya agar Laravel secara eksplisit mengetahui foreign key dan local key yang digunakan.
     public function qrTokens(): HasMany
     {
-        return $this->hasMany(BarbershopQrToken::class);
+        return $this->hasMany(
+            BarbershopQrToken::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
     }
 
     public function activeToken(): HasOne
     {
-        return $this->hasOne(BarbershopQrToken::class)
-            ->ofMany('issued_at', 'max', function ($query) {
-                $query->where('status', 'active')
-                    ->whereNull('revoked_at')
-                    ->where(function ($query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    });
+        return $this->hasOne(
+            BarbershopQrToken::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        )->ofMany('issued_at', 'max')
+            ->where('status', 'active')
+            ->whereNull('revoked_at')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
             });
     }
 
@@ -80,5 +87,13 @@ class GoBarberShop extends Model
             'go_barbershop_id',
             'go_barbershop_id'
         );
+    }
+
+    /**
+     * Menentukan key untuk route model binding.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'go_barbershop_id';
     }
 }

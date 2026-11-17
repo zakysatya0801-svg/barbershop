@@ -1,5 +1,7 @@
+
 <?php
 
+use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\SetTenantContext;
 use App\Support\Routing\PortalRoutes;
 use Illuminate\Foundation\Application;
@@ -20,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Mendaftarkan route tambahan.
         then: function (): void {
+
             // Route khusus client dengan middleware web.
             Route::middleware('web')
                 ->group(base_path('routes/client.php'));
@@ -29,11 +32,13 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
         // Alias middleware untuk pemeriksaan role pengguna.
         $middleware->alias([
-            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'role' => EnsureUserHasRole::class,
             'tenant' => SetTenantContext::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
