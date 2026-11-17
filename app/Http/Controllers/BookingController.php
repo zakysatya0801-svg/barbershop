@@ -13,9 +13,14 @@ class BookingController extends Controller
     public function services($shop)
     {
         $barbershop = GoBarberShop::with('location')
-            ->findOrFail($shop);
+            ->where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
-        $services = $barbershop->services()->get();
+        $services = $barbershop->services()
+            ->withoutGlobalScope('tenant')
+            ->where('is_available', true)
+            ->orderBy('service_name')
+            ->get();
 
         return view('booking-barber.services', compact(
             'barbershop',
@@ -26,22 +31,25 @@ class BookingController extends Controller
     // SIMPAN LAYANAN YANG DIPILIH
     public function storeServices(Request $request, $shop)
     {
-        $barbershop = GoBarberShop::findOrFail($shop);
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $validated = $request->validate([
             'service_ids' => ['required', 'array', 'min:1'],
-            'service_ids.*' => ['required', 'integer'],
+            'service_ids.*' => ['required', 'integer', 'distinct'],
         ]);
 
         $serviceIds = $barbershop->services()
+            ->withoutGlobalScope('tenant')
             ->whereIn('service_id', $validated['service_ids'])
+            ->where('is_available', true)
             ->pluck('service_id')
             ->map(fn ($id) => (int) $id)
             ->all();
 
         if (count($serviceIds) !== count($validated['service_ids'])) {
             throw ValidationException::withMessages([
-                'service_ids' => 'Layanan yang dipilih tidak valid.',
+                'service_ids' => 'Layanan tidak valid atau sudah tidak tersedia.',
             ]);
         }
 
@@ -59,13 +67,14 @@ class BookingController extends Controller
     public function schedule($shop)
     {
         $barbershop = GoBarberShop::with('location')
-            ->findOrFail($shop);
+            ->where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $booking = session('booking');
 
         if (
             !$booking ||
-            $booking['shop_id'] != $barbershop->go_barbershop_id ||
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['service_ids'])
         ) {
             return redirect()->route('booking', $shop)
@@ -73,10 +82,18 @@ class BookingController extends Controller
         }
 
         $services = $barbershop->services()
+            ->withoutGlobalScope('tenant')
             ->whereIn('service_id', $booking['service_ids'])
             ->get();
 
-        $barbers = $barbershop->barbers()->get();
+        if ($services->count() !== count($booking['service_ids'])) {
+            return redirect()->route('booking', $shop)
+                ->with('error', 'Data layanan tidak ditemukan. Silakan pilih kembali.');
+        }
+
+        $barbers = $barbershop->barbers()
+            ->withoutGlobalScope('tenant')
+            ->get();
 
         return view('booking-barber.schedule', compact(
             'barbershop',
@@ -88,13 +105,14 @@ class BookingController extends Controller
     // SIMPAN BARBER DAN JADWAL
     public function storeSchedule(Request $request, $shop)
     {
-        $barbershop = GoBarberShop::findOrFail($shop);
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $booking = session('booking');
 
         if (
             !$booking ||
-            $booking['shop_id'] != $barbershop->go_barbershop_id ||
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['service_ids'])
         ) {
             return redirect()->route('booking', $shop);
@@ -106,7 +124,8 @@ class BookingController extends Controller
             'booking_time' => ['required', 'date_format:H:i'],
         ]);
 
-        $barber = Barber::where('barber_id', $validated['barber_id'])
+        $barber = Barber::withoutGlobalScope('tenant')
+            ->where('barber_id', $validated['barber_id'])
             ->where('shop_id', $barbershop->go_barbershop_id)
             ->first();
 
@@ -129,19 +148,22 @@ class BookingController extends Controller
     // LANGKAH 3: PEMBAYARAN
     public function payment($shop)
     {
-        $barbershop = GoBarberShop::findOrFail($shop);
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $booking = session('booking');
 
         if (
             !$booking ||
-            $booking['shop_id'] != $barbershop->go_barbershop_id ||
-            empty($booking['barber_id'])
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
+            empty($booking['barber_id']) ||
+            empty($booking['service_ids'])
         ) {
             return redirect()->route('booking', $shop);
         }
 
         $services = $barbershop->services()
+            ->withoutGlobalScope('tenant')
             ->whereIn('service_id', $booking['service_ids'])
             ->get();
 
@@ -157,30 +179,27 @@ class BookingController extends Controller
         ));
     }
 
-    // KONFIRMASI PEMBAYARAN SEMENTARA
+    // KONFIRMASI PEMBAYARAN SIMULASI BERHASIL
     public function confirmPayment(Request $request, $shop)
     {
-        $barbershop = GoBarberShop::findOrFail($shop);
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $booking = session('booking');
 
         if (
             !$booking ||
-            $booking['shop_id'] != $barbershop->go_barbershop_id ||
-            empty($booking['barber_id'])
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
+            empty($booking['barber_id']) ||
+            empty($booking['service_ids'])
         ) {
-            return redirect()->route('booking', $shop);
+            return redirect()->route('booking', $shop)
+                ->with('error', 'Data booking tidak lengkap. Silakan ulangi booking.');
         }
 
-        /*
-         * SEMENTARA:
-         * Ini hanya simulasi konfirmasi.
-         * Belum memverifikasi pembayaran melalui payment gateway.
-         */
-
-        $booking['booking_code'] = 'GB-' . strtoupper(
-            bin2hex(random_bytes(4))
-        );
+        // Ini masih simulasi, belum terhubung payment gateway.
+        $booking['booking_code'] = $booking['booking_code']
+            ?? 'GB-' . strtoupper(bin2hex(random_bytes(4)));
 
         $booking['payment_status'] = 'simulasi';
         $booking['reservation_status'] = 'menunggu_verifikasi';
@@ -190,28 +209,89 @@ class BookingController extends Controller
         return redirect()->route('booking.success', $shop);
     }
 
-    // BOOKING SELESAI
+    // BOOKING BERHASIL
     public function success($shop)
     {
-        $barbershop = GoBarberShop::findOrFail($shop);
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
 
         $booking = session('booking');
 
         if (
             !$booking ||
-            $booking['shop_id'] != $barbershop->go_barbershop_id ||
-            empty($booking['booking_code'])
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
+            empty($booking['booking_code']) ||
+            empty($booking['service_ids'])
         ) {
             return redirect()->route('booking', $shop);
         }
 
         $services = $barbershop->services()
+            ->withoutGlobalScope('tenant')
             ->whereIn('service_id', $booking['service_ids'])
             ->get();
 
         $total = $services->sum('price');
 
         return view('booking-barber.success', compact(
+            'barbershop',
+            'booking',
+            'services',
+            'total'
+        ));
+    }
+
+    // SIMULASI PEMBAYARAN GAGAL
+    public function paymentFailed($shop)
+    {
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
+
+        $booking = session('booking');
+
+        if (
+            !$booking ||
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
+            empty($booking['barber_id']) ||
+            empty($booking['service_ids'])
+        ) {
+            return redirect()->route('booking', $shop)
+                ->with('error', 'Data booking tidak ditemukan. Silakan ulangi booking.');
+        }
+
+        $booking['payment_status'] = 'gagal';
+        $booking['reservation_status'] = 'pembayaran_gagal';
+
+        session(['booking' => $booking]);
+
+        return redirect()->route('booking.failed', $shop);
+    }
+
+    // HALAMAN PEMBAYARAN GAGAL
+    public function failed($shop)
+    {
+        $barbershop = GoBarberShop::where('go_barbershop_id', $shop)
+            ->firstOrFail();
+
+        $booking = session('booking');
+
+        if (
+            !$booking ||
+            ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
+            empty($booking['service_ids'])
+        ) {
+            return redirect()->route('booking', $shop)
+                ->with('error', 'Data booking tidak ditemukan. Silakan mulai booking kembali.');
+        }
+
+        $services = $barbershop->services()
+            ->withoutGlobalScope('tenant')
+            ->whereIn('service_id', $booking['service_ids'])
+            ->get();
+
+        $total = $services->sum('price');
+
+        return view('booking-barber.failed', compact(
             'barbershop',
             'booking',
             'services',

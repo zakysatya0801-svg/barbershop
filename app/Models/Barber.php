@@ -16,23 +16,27 @@ class Barber extends Model
     protected $primaryKey = 'barber_id';
 
     protected $fillable = [
-        'go_barbershop_id',
+        'shop_id',
         'barber_name',
         'specialty',
         'photo',
     ];
 
-    // Relasi barber dengan barbershop
+    /**
+     * Relasi barber dengan barbershop.
+     */
     public function goBarberShop(): BelongsTo
     {
         return $this->belongsTo(
             GoBarberShop::class,
-            'go_barbershop_id',
+            'shop_id',
             'go_barbershop_id'
         );
     }
 
-    // Relasi booking barber
+    /**
+     * Relasi barber dengan booking.
+     */
     public function bookings(): HasMany
     {
         return $this->hasMany(
@@ -40,5 +44,13 @@ class Barber extends Model
             'barber_id',
             'barber_id'
         );
+    }
+
+    /**
+     * Relasi untuk pembatasan tenant.
+     */
+    protected function tenantRelationship(): ?string
+    {
+        return 'goBarberShop';
     }
 }
