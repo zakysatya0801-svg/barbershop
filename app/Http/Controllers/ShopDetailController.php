@@ -9,23 +9,35 @@ class ShopDetailController extends Controller
 {
     public function show($shop)
     {
-        // Mengambil data barbershop berdasarkan ID
         $barbershop = GoBarberShop::with([
             'location',
-            'services' => fn ($query) => $query->withoutGlobalScope('tenant'),
-            'barbers' => fn ($query) => $query->withoutGlobalScope('tenant'),
-            'reviews' => fn ($query) => $query->withoutGlobalScope('tenant'),
+
+            // Mengambil layanan milik barbershop ini.
+            'services' => function ($query) {
+                $query->withoutGlobalScope('tenant')
+                    ->orderBy('service_name');
+            },
+
+            // Mengambil barber milik barbershop ini.
+            'barbers' => function ($query) {
+                $query->withoutGlobalScope('tenant');
+            },
+
+            'reviews' => function ($query) {
+                $query->withoutGlobalScope('tenant');
+            },
         ])
             ->withAvg([
-                'reviews' => fn (Builder $query) => $query->withoutGlobalScope('tenant'),
+                'reviews' => fn (Builder $query) =>
+                    $query->withoutGlobalScope('tenant'),
             ], 'rating')
             ->withCount([
-                'reviews' => fn (Builder $query) => $query->withoutGlobalScope('tenant'),
+                'reviews' => fn (Builder $query) =>
+                    $query->withoutGlobalScope('tenant'),
             ])
             ->where('go_barbershop_id', $shop)
             ->firstOrFail();
 
-        // Menampilkan halaman detail barbershop
         return view('customer.shops.show', compact('barbershop'));
     }
 }

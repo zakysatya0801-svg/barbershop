@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,7 @@ use App\Http\Controllers\BarbershopQrScanController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ShopDetailController;
 use App\Http\Controllers\ShopExploreController;
+use App\Http\Controllers\Owner\ServiceController;
 
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureClientOwner;
@@ -46,35 +48,40 @@ Route::get('/barbershop/{shop}/detail', [ShopDetailController::class, 'show'])
 |--------------------------------------------------------------------------
 | BOOKING PELANGGAN
 |--------------------------------------------------------------------------
-| Langkah 1: Pilih layanan
-| Langkah 2: Pilih barber dan jadwal
-| Langkah 3: Pembayaran
-|--------------------------------------------------------------------------
 */
 
-// Langkah 1 - Menampilkan pilihan layanan
+// Langkah 1: Pilih layanan
 Route::get('/booking/{shop}', [BookingController::class, 'services'])
     ->name('booking');
 
-// Menyimpan layanan yang dipilih
 Route::post('/booking/{shop}/layanan', [BookingController::class, 'storeServices'])
     ->name('booking.services.store');
 
-// Langkah 2 - Menampilkan pilihan barber dan jadwal
+// Langkah 2: Pilih barber dan jadwal
 Route::get('/booking/{shop}/jadwal', [BookingController::class, 'schedule'])
     ->name('booking.schedule');
 
-// Menyimpan barber, tanggal, dan jam
 Route::post('/booking/{shop}/jadwal', [BookingController::class, 'storeSchedule'])
     ->name('booking.schedule.store');
 
-// Langkah 3 - Menampilkan halaman pembayaran
+// Langkah 3: Pembayaran
 Route::get('/booking/{shop}/pembayaran', [BookingController::class, 'payment'])
     ->name('booking.payment');
 
-// Konfirmasi pembayaran
 Route::post('/booking/{shop}/pembayaran', [BookingController::class, 'confirmPayment'])
     ->name('booking.payment.confirm');
+
+// Simulasi pembayaran gagal
+Route::post('/booking/{shop}/pembayaran/gagal', [BookingController::class, 'paymentFailed'])
+    ->name('booking.payment.failed');
+
+// Halaman booking berhasil
+Route::get('/booking/{shop}/berhasil', [BookingController::class, 'success'])
+    ->name('booking.success');
+
+// Halaman booking gagal
+Route::get('/booking/{shop}/gagal', [BookingController::class, 'failed'])
+    ->name('booking.failed');
 
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +90,7 @@ Route::post('/booking/{shop}/pembayaran', [BookingController::class, 'confirmPay
 */
 
 Route::get('/dashboard/{shop}', function (string $shop) {
-    return 'Dashboard Client Barbershop: '.e($shop);
+    return 'Dashboard Client Barbershop: ' . e($shop);
 })
     ->middleware(['auth', EnsureClientOwner::class])
     ->name('dashboard');
@@ -143,6 +150,15 @@ Route::middleware(['auth', ResolveShopContext::class])
         Route::view('/profil', 'base-client.profil')
             ->name('profil');
 
-        Route::get('/booking/{shop}/berhasil', [BookingController::class, 'success'])
-            ->name('booking.success');
+        /*
+        |--------------------------------------------------------------------------
+        | CRUD LAYANAN BARBERSHOP - MODUL 7
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource('layanan', ServiceController::class)
+            ->except(['show'])
+            ->parameters([
+                'layanan' => 'service',
+            ]);
     });

@@ -15,29 +15,34 @@ class Service extends Model
     protected $primaryKey = 'service_id';
 
     protected $fillable = [
-        'shop_id',
+        'go_barbershop_id',
         'service_name',
         'photo',
         'price',
         'duration',
+        'description',
+        'is_available',
     ];
 
-    // Menghubungkan layanan dengan barbershop
-    public function goBarberShop(): BelongsTo
-    {
-        return $this->belongsTo(
-            GoBarberShop::class,
-            'shop_id',
-            'go_barbershop_id'
-        );
-    }
-
-    // Mengatur tipe data
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
             'duration' => 'integer',
+            'is_available' => 'boolean',
         ];
     }
+
+    public function goBarberShop(): BelongsTo
+    {
+        return $this->belongsTo(
+            GoBarberShop::class,
+            'go_barbershop_id',
+            'go_barbershop_id'
+        );
+    }
+    public function getRouteKeyName(): string
+{
+    return 'service_id';
+}
 }

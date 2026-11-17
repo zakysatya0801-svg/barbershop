@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,10 +7,8 @@
 
     <title>@yield('title', 'Dashboard Owner') - GoBarberShop</title>
 
-    {{-- Aset frontend proyek --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- AdminLTE --}}
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/css/adminlte.min.css') }}">
 
     <style>
@@ -190,12 +189,14 @@
 </head>
 
 <body>
+
     <header class="app-navbar">
         <strong>GoBarberShop</strong>
         <span>{{ auth()->user()->name ?? 'Owner' }}</span>
     </header>
 
     <aside class="app-sidebar">
+
         <a href="{{ route('client.dashboard') }}" class="app-brand">
             GoBarberShop
         </a>
@@ -205,55 +206,72 @@
             <div>{{ $owner->nama_owners ?? 'Owner' }}</div>
         </div>
 
+        {{-- DASHBOARD --}}
         <a href="{{ route('client.dashboard') }}"
            class="app-menu {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
             Dashboard
         </a>
 
+        {{-- BARBERSHOP --}}
         <a href="{{ route('owner.barbershop') }}"
            class="app-menu {{ request()->routeIs('owner.barbershop') ? 'active' : '' }}">
             Barbershop
         </a>
 
+        {{-- LAYANAN --}}
+        <a href="{{ route('owner.layanan.index') }}"
+           class="app-menu {{ request()->routeIs('owner.layanan.*') ? 'active' : '' }}">
+            Layanan
+        </a>
+
+        {{-- BOOKING --}}
         <a href="{{ route('owner.booking') }}"
            class="app-menu {{ request()->routeIs('owner.booking') ? 'active' : '' }}">
             Booking
         </a>
 
+        {{-- BARBER --}}
         <a href="{{ route('owner.barber') }}"
            class="app-menu {{ request()->routeIs('owner.barber') ? 'active' : '' }}">
             Barber
         </a>
 
+        {{-- PROFIL --}}
         <a href="{{ route('owner.profil') }}"
            class="app-menu {{ request()->routeIs('owner.profil') ? 'active' : '' }}">
             Profil
         </a>
 
+        {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="app-logout">Logout</button>
+            <button type="submit" class="app-logout">
+                Logout
+            </button>
         </form>
+
     </aside>
 
     <main class="app-main">
-        <h1 class="app-title">@yield('page-title', 'Dashboard')</h1>
 
-        {{-- Mendukung halaman yang menggunakan Blade section --}}
+        <h1 class="app-title">
+            @yield('page-title', 'Dashboard')
+        </h1>
+
         @yield('content')
 
-        {{-- Mendukung halaman yang menggunakan Blade component slot --}}
         {{ $slot ?? '' }}
 
-        {{-- Mendukung layout lama yang menggunakan variabel content --}}
         @if(isset($content))
             {!! $content !!}
         @endif
+
     </main>
 
     <footer class="app-footer">
         <strong>GoBarberShop</strong> &copy; {{ date('Y') }}
         <span> — Dashboard Owner</span>
     </footer>
+
 </body>
 </html>

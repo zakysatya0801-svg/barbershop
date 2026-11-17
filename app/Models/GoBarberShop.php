@@ -55,7 +55,7 @@ class GoBarberShop extends Model
     }
 
     /**
-     * Relasi lokasi.
+     * Relasi lokasi barbershop.
      */
     public function location(): BelongsTo
     {
@@ -80,18 +80,20 @@ class GoBarberShop extends Model
 
     /**
      * Relasi layanan.
+     * Foreign key services: go_barbershop_id
      */
     public function services(): HasMany
     {
         return $this->hasMany(
             Service::class,
-            'shop_id',
+            'go_barbershop_id',
             'go_barbershop_id'
         );
     }
 
     /**
      * Relasi barber.
+     * Foreign key barbers: shop_id
      */
     public function barbers(): HasMany
     {
