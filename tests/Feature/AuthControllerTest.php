@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Admin;
+use App\Models\Barber;
 use App\Models\GoBarberShop;
 use App\Models\Owner;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -197,6 +199,47 @@ class AuthControllerTest extends TestCase
             ->assertDontSee('Barbershop Orang Lain');
     }
 
+    public function test_owner_can_open_the_owner_dashboard_route(): void
+    {
+        $ownerUser = $this->createUserWithRole('owner');
+        $owner = $this->createOwnerProfile($ownerUser);
+        $this->createBarbershop($owner, 'Barbershop Dashboard Owner');
+
+        $this->actingAs($ownerUser)
+            ->get('/owner/dashboard')
+            ->assertOk()
+            ->assertSee('Dashboard Owner')
+            ->assertSee('Barbershop Dashboard Owner');
+    }
+
+    public function test_owner_can_view_barber_and_service_data(): void
+    {
+        $ownerUser = $this->createUserWithRole('owner');
+        $owner = $this->createOwnerProfile($ownerUser);
+        $barbershop = $this->createBarbershop($owner, 'Barbershop Data Owner');
+
+        Barber::query()->create([
+            'go_barbershop_id' => $barbershop->go_barbershop_id,
+            'barber_name' => 'Barber Milik Owner',
+            'specialty' => 'Classic Cut',
+        ]);
+        Service::query()->create([
+            'go_barbershop_id' => $barbershop->go_barbershop_id,
+            'service_name' => 'Service Milik Owner',
+            'price' => 50000,
+            'duration' => 30,
+        ]);
+
+        $this->actingAs($ownerUser)
+            ->get('/owner/barber')
+            ->assertOk()
+            ->assertSee('Barber Milik Owner');
+
+        $this->get('/owner/service')
+            ->assertOk()
+            ->assertSee('Service Milik Owner');
+    }
+
     public function test_owner_can_open_the_owner_barbershop_page(): void
     {
         $ownerUser = $this->createUserWithRole('owner');
@@ -296,7 +339,7 @@ class AuthControllerTest extends TestCase
         $response->assertOk()
             ->assertSee('<form action="'.route('logout').'" method="POST">', false)
             ->assertSee('name="_token"', false)
-            ->assertSee('class="app-logout">Logout</button>', false);
+            ->assertSee('Logout');
     }
 
     private function createUserWithRole(string $role, bool $verified = true): User

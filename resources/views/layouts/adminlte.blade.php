@@ -50,7 +50,7 @@
     <!-- Sidebar navigasi. -->
     <aside class="app-sidebar bg-dark shadow" data-bs-theme="dark">
         <div class="sidebar-brand">
-            <a href="{{ route('admin.dashboard') }}"
+            <a href="{{ route('client.dashboard') }}"
                class="brand-link text-decoration-none">
                 <img src="{{ asset('vendor/adminlte/assets/img/AdminLTELogo.png') }}"
                      alt="Logo AdminLTE"
@@ -65,11 +65,11 @@
                     data-lte-toggle="treeview" role="menu">
 
                     <li class="nav-item">
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="nav-link active">
-                            <i class="nav-icon bi bi-speedometer2"></i>
-                            <p>Dashboard</p>
-                        </a>
+                      <a href="{{ route('client.dashboard') }}"
+   class="nav-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+    <i class="nav-icon bi bi-speedometer2"></i>
+    <p>Dashboard</p>
+</a>
                     </li>
 
                     <!-- Menu sementara; halaman CRUD dibuat berikutnya. -->

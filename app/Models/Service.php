@@ -2,42 +2,33 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Service extends Model
 {
-    use BelongsToTenant;
-
+    // Menentukan tabel yang digunakan model.
     protected $table = 'services';
 
+    // Menentukan primary key tabel services.
     protected $primaryKey = 'service_id';
 
     // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
+        'go_barbershop_id',
         'service_name',
         'photo',
         'price',
         'duration',
     ];
 
-    // Menghubungkan layanan dengan barbershop pemiliknya.
-    public function goBarberShop(): BelongsTo
+    // Setiap service dimiliki oleh satu barbershop.
+    public function goBarbershop(): BelongsTo
     {
         return $this->belongsTo(
             GoBarberShop::class,
             'go_barbershop_id',
             'go_barbershop_id'
         );
-    }
-
-    // Mengatur tipe data harga dan durasi layanan.
-    protected function casts(): array
-    {
-        return [
-            'price' => 'decimal:2',
-            'duration' => 'integer',
-        ];
     }
 }
