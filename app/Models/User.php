@@ -23,48 +23,35 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // Menyesuaikan primary key dengan struktur tabel users.
     protected $primaryKey = 'user_id';
 
-    // Menghubungkan User dengan data Admin untuk memperoleh role.
+    /**
+     * Relasi User dengan Admin.
+     */
     public function admin(): HasOne
     {
-        return $this->hasOne(Admin::class, 'user_id', 'user_id');
+        return $this->hasOne(
+            Admin::class,
+            'user_id',
+            'user_id'
+        );
     }
 
-    // Mengatur konversi atribut model.
-    protected function casts(): array
+    /**
+     * Relasi User dengan Customer.
+     */
+    public function customer(): HasOne
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasOne(
+            Customer::class,
+            'user_id',
+            'user_id'
+        );
     }
 
-    // Memastikan pengguna memiliki role yang sesuai.
-    // Status aktif belum diperiksa karena tabel users tidak memiliki kolom status.
-    public function hasRole(string $role): bool
-    {
-        return $this->admin?->role === $role;
-    }
-
-    // Catatan: pemeriksaan status akun belum diterapkan karena kolom status
-    // belum tersedia pada tabel users.
-    public function isAdmin(): bool
-    {
-        return $this->hasRole('admin');
-    }
-
-    public function isClient(): bool
-    {
-        return $this->hasRole('client');
-    }
-
-    public function isActive(): bool
-    {
-        return $this->status === 'active';
-    }
-
+    /**
+     * Relasi User dengan Owner melalui Admin.
+     */
     public function owner(): HasOneThrough
     {
         return $this->hasOneThrough(
@@ -75,5 +62,49 @@ class User extends Authenticatable
             'user_id',
             'admin_id'
         );
+    }
+
+    /**
+     * Pengaturan tipe data.
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Memeriksa role pengguna.
+     */
+    public function hasRole(string $role): bool
+    {
+        $currentRole = $this->admin?->role ?? $this->role;
+
+        return $currentRole === $role;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isClient(): bool
+    {
+        return $this->hasRole('owner');
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->hasRole('customer');
+    }
+
+    /**
+     * Memeriksa status akun.
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 }

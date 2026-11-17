@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,7 +24,9 @@ class GoBarberShop extends Model
         'close_time',
     ];
 
-    // /Alasannya agar Laravel secara eksplisit mengetahui foreign key dan local key yang digunakan.
+    /**
+     * Relasi QR Token.
+     */
     public function qrTokens(): HasMany
     {
         return $this->hasMany(
@@ -33,26 +36,43 @@ class GoBarberShop extends Model
         );
     }
 
+    /**
+     * Mengambil token aktif terbaru.
+     */
     public function activeToken(): HasOne
     {
         return $this->hasOne(
             BarbershopQrToken::class,
             'go_barbershop_id',
             'go_barbershop_id'
-        )->ofMany('issued_at', 'max')
-            ->where('status', 'active')
-            ->whereNull('revoked_at')
-            ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            });
+        )->ofMany([
+            'issued_at' => 'max',
+            'id' => 'max',
+        ], function (Builder $query): void {
+            $query->where('status', 'active')
+                ->whereNull('revoked_at')
+                ->where(function (Builder $query): void {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+        });
     }
 
+    /**
+     * Relasi lokasi.
+     */
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'location_id', 'location_id');
+        return $this->belongsTo(
+            Location::class,
+            'location_id',
+            'location_id'
+        );
     }
 
+    /**
+     * Relasi skema komisi.
+     */
     public function commissionSchemes(): HasMany
     {
         return $this->hasMany(
@@ -62,6 +82,9 @@ class GoBarberShop extends Model
         );
     }
 
+    /**
+     * Relasi layanan.
+     */
     public function services(): HasMany
     {
         return $this->hasMany(
@@ -71,6 +94,9 @@ class GoBarberShop extends Model
         );
     }
 
+    /**
+     * Relasi barber.
+     */
     public function barbers(): HasMany
     {
         return $this->hasMany(
@@ -80,6 +106,9 @@ class GoBarberShop extends Model
         );
     }
 
+    /**
+     * Relasi ulasan.
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(

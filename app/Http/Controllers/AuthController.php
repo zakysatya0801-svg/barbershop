@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
+use App\Models\Owner;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -15,31 +19,131 @@ class AuthController extends Controller
      */
     public function showLogin(Request $request): View|RedirectResponse
     {
-        // Jika sudah login, arahkan pengguna sesuai role akun.
+        // Jika sudah login sebagai Owner, langsung ke dashboard.
         if (Auth::check()) {
             return $this->redirectByRole($request);
         }
 
-        // Menampilkan halaman form login.
         return view('auth.login');
     }
 
     /**
-     * Memeriksa email dan password pengguna.
+     * Menampilkan halaman registrasi Owner.
+     */
+    public function showRegister(Request $request): View|RedirectResponse
+    {
+        if (Auth::check()) {
+            return $this->redirectByRole($request);
+        }
+
+        return view('auth.register');
+    }
+
+    /**
+     * Registrasi akun Owner.
+     */
+    public function register(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users,email',
+                'unique:owners,email',
+            ],
+
+            'phone' => [
+                'required',
+                'string',
+                'max:20',
+            ],
+
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8),
+            ],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        // Menyimpan User, Admin, dan Owner sekaligus.
+        DB::transaction(function () use ($validated): void {
+
+            // 1. Membuat akun User.
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+                'role' => 'owner',
+                'status' => 'active',
+            ]);
+
+            // 2. Membuat data Admin dengan role Owner.
+            $admin = Admin::create([
+                'user_id' => $user->user_id,
+                'role' => 'owner',
+            ]);
+
+            // 3. Membuat profil Owner.
+            Owner::create([
+                'nama_owners' => $validated['name'],
+                'email' => $validated['email'],
+
+                'phone' => $validated['phone'],
+
+                'admin_id' => $admin->admin_id,
+            ]);
+        });
+
+        // Tidak melakukan login otomatis.
+        // Pengguna kembali ke halaman Home.
+        return redirect()
+            ->route('home')
+            ->with(
+                'success',
+                'Akun Owner berhasil dibuat! Silakan klik Masuk / Daftar untuk login.'
+            );
+    }
+
+    /**
+     * Proses login.
      */
     public function login(Request $request): RedirectResponse
     {
-        // Memvalidasi input sebelum memeriksa akun ke database.
         $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
+            'email' => [
+                'required',
+                'email',
+            ],
+
+            'password' => [
+                'required',
+                'string',
+            ],
         ]);
 
-        // Memeriksa kecocokan email dan password.
-        if (! Auth::attempt([
+        // Memeriksa email, password, dan status akun.
+        $authenticated = Auth::attempt([
             'email' => $validated['email'],
             'password' => $validated['password'],
-        ])) {
+            'status' => 'active',
+        ]);
+
+        if (! $authenticated) {
             return back()
                 ->withErrors([
                     'email' => 'Email atau password tidak sesuai.',
@@ -47,53 +151,37 @@ class AuthController extends Controller
                 ->onlyInput('email');
         }
 
-        // Memperbarui session setelah login berhasil.
+        // Memperbarui session.
         $request->session()->regenerate();
 
-        // Mengarahkan pengguna ke dashboard berdasarkan role akun.
         return $this->redirectByRole($request);
     }
 
     /**
-     * Mengakhiri sesi login pengguna.
+     * Logout.
      */
     public function logout(Request $request): RedirectResponse
     {
-        // Menghapus autentikasi pengguna saat ini.
         Auth::logout();
 
-        // Menghapus session lama dan membuat token CSRF baru.
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Kembali ke halaman login.
         return redirect()->route('login');
     }
 
     /**
-     * Mengarahkan Admin dan Owner berdasarkan role akun.
+     * Pengalihan akun yang sudah login.
      */
     private function redirectByRole(Request $request): RedirectResponse
     {
-        // Mengambil pengguna yang sedang login.
         $user = $request->user();
 
-        // Memastikan pengguna sudah login.
-        if (! ($user instanceof User)) {
-            return redirect()->route('login');
-        }
-
-        // Mengambil role melalui relasi User ke tabel admins.
-        $role = $user->admin?->role;
-
-        // Mengarahkan Admin ke dashboard Admin.
-        if ($role === 'admin') {
+        if ($user?->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
         }
 
-        // Mengarahkan Owner ke dashboard Owner.
-        // Mengarahkan Owner ke dashboard client.
-        if ($role === 'owner') {
+        if ($user?->hasRole('owner')) {
             return redirect()->route('client.dashboard');
         }
 

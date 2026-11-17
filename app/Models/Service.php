@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Service extends Model
 {
+    use BelongsToTenant;
+
     // Menentukan tabel yang digunakan model.
     protected $table = 'services';
 
     // Menentukan primary key tabel services.
     protected $primaryKey = 'service_id';
 
-    // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
-        'go_barbershop_id',
         'service_name',
         'photo',
         'price',
@@ -30,5 +31,14 @@ class Service extends Model
             'go_barbershop_id',
             'go_barbershop_id'
         );
+    }
+
+    // Mengatur tipe data
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'duration' => 'integer',
+        ];
     }
 }

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Barber extends Model
 {
+    use BelongsToTenant;
+
     // Menentukan nama tabel di database.
     protected $table = 'barbers';
 
@@ -15,7 +18,6 @@ class Barber extends Model
 
     // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
-        'go_barbershop_id',
         'barber_name',
         'specialty',
         'photo',

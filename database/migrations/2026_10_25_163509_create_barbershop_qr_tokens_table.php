@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -18,7 +17,6 @@ return new class extends Migration
 
             $table->char('token_hash', 64)->unique();
             $table->string('status', 20)->default('active');
-
             $table->timestamp('issued_at');
             $table->timestamp('expires_at')->nullable();
             $table->timestamp('revoked_at')->nullable();

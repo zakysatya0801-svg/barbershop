@@ -3,11 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Admin;
-use App\Models\Barber;
 use App\Models\GoBarberShop;
 use App\Models\Owner;
-use App\Models\Service;
 use App\Models\User;
+use App\Support\Tenancy\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -218,17 +217,22 @@ class AuthControllerTest extends TestCase
         $owner = $this->createOwnerProfile($ownerUser);
         $barbershop = $this->createBarbershop($owner, 'Barbershop Data Owner');
 
-        Barber::query()->create([
-            'go_barbershop_id' => $barbershop->go_barbershop_id,
-            'barber_name' => 'Barber Milik Owner',
-            'specialty' => 'Classic Cut',
-        ]);
-        Service::query()->create([
-            'go_barbershop_id' => $barbershop->go_barbershop_id,
-            'service_name' => 'Service Milik Owner',
-            'price' => 50000,
-            'duration' => 30,
-        ]);
+        $tenantContext = app(TenantContext::class);
+        $tenantContext->set($barbershop);
+
+        try {
+            $barbershop->barbers()->create([
+                'barber_name' => 'Barber Milik Owner',
+                'specialty' => 'Classic Cut',
+            ]);
+            $barbershop->services()->create([
+                'service_name' => 'Service Milik Owner',
+                'price' => 50000,
+                'duration' => 30,
+            ]);
+        } finally {
+            $tenantContext->clear();
+        }
 
         $this->actingAs($ownerUser)
             ->get('/owner/barber')
