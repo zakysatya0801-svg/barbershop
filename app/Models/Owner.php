@@ -15,17 +15,25 @@ class Owner extends Model
     protected $fillable = [
         'nama_owners',
         'email',
-        'phone',
+        'phonr',
         'admin_id',
     ];
 
-    // Menghubungkan Owner dengan Admin melalui admin_id.
+    /**
+     * Relasi Owner dengan Admin.
+     */
     public function admin(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
+        return $this->belongsTo(
+            Admin::class,
+            'admin_id',
+            'admin_id'
+        );
     }
 
-    // Mengambil semua barbershop yang dimiliki Owner ini.
+    /**
+     * Mengambil semua barbershop milik Owner.
+     */
     public function goBarberShops(): HasMany
     {
         return $this->hasMany(

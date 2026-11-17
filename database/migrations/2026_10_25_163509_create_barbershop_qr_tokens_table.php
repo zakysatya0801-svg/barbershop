@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -12,13 +11,12 @@ return new class extends Migration
         Schema::create('barbershop_qr_tokens', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('barbershop_id')
-                ->constrained('barbershops')
+            $table->foreignId('go_barbershop_id')
+                ->constrained('go_barbershops', 'go_barbershop_id')
                 ->restrictOnDelete();
 
             $table->char('token_hash', 64)->unique();
             $table->string('status', 20)->default('active');
-
             $table->timestamp('issued_at');
             $table->timestamp('expires_at')->nullable();
             $table->timestamp('revoked_at')->nullable();

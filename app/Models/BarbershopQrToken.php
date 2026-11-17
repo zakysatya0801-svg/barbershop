@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\GoBarberShop;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,11 @@ class BarbershopQrToken extends Model
 
     public function barbershop(): BelongsTo
     {
-        return $this->belongsTo(go_barbershops::class);
+        return $this->belongsTo(
+        GoBarberShop::class,
+        'go_barbershop_id',
+        'go_barbershop_id'
+      );
     }
 
     public function isActive(): bool

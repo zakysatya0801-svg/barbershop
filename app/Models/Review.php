@@ -16,7 +16,8 @@ class Review extends Model
     protected $primaryKey = 'review_id';
 
     protected $fillable = [
-        'costumer_id',
+        'customer_id',
+        'go_barbershop_id',
         'booking_id',
         'rating',
         'comment',
@@ -35,7 +36,11 @@ class Review extends Model
 
     public function booking(): BelongsTo
     {
-        return $this->belongsTo(Booking::class, 'booking_id', 'booking_id');
+        return $this->belongsTo(
+            Booking::class,
+            'booking_id',
+            'booking_id'
+        );
     }
 
     protected function casts(): array

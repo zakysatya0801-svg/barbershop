@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
 
@@ -10,13 +10,12 @@
     <title>Login | GoBarberShop</title>
 
     <!-- Memuat Bootstrap untuk mengatur tata letak form login. -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Memuat stylesheet AdminLTE lokal milik project. -->
-    <link href="{{ asset('vendor/adminlte/css/adminlte.min.css') }}"
-          rel="stylesheet">
+    <link href="{{ asset('vendor/adminlte/css/adminlte.min.css') }}" rel="stylesheet">
 </head>
+
 <body class="login-page bg-body-secondary">
 
     <!-- Kontainer utama halaman login. -->
@@ -34,63 +33,85 @@
                 </p>
             </div>
 
+
             <div class="card-body">
 
-                <!-- Menampilkan pesan kesalahan autentikasi. -->
+                {{-- Notifikasi registrasi berhasil --}}
+                @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                {{-- Pesan kesalahan login --}}
                 @if ($errors->any())
                     <div class="alert alert-danger" role="alert">
                         {{ $errors->first() }}
                     </div>
                 @endif
 
-                <!-- Mengirim email dan password ke AuthController. -->
+                {{-- Form Login --}}
                 <form action="{{ route('login.process') }}" method="POST">
+
                     @csrf
 
-                    <!-- Input email akun. -->
+                    {{-- Email --}}
                     <div class="input-group mb-3">
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            placeholder="Email"
-                            value="{{ old('email') }}"
-                            autocomplete="username"
-                            required
-                            autofocus
-                        >
+
+                        <input type="email" name="email" class="form-control" placeholder="Email"
+                            value="{{ old('email', session('registered_email')) }}" autocomplete="username" required
+                            autofocus>
+
                     </div>
 
-                    <!-- Input password akun. -->
+                    {{-- Password --}}
                     <div class="input-group mb-3">
-                        <input
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Password"
-                            autocomplete="current-password"
-                            required
-                        >
+
+                        <input type="password" name="password" class="form-control" placeholder="Password"
+                            autocomplete="current-password" required>
+
                     </div>
 
-                    <!-- Tombol untuk mengirim form login. -->
+                    {{-- Tombol Login --}}
                     <div class="d-grid">
+
                         <button type="submit" class="btn btn-primary">
                             Login
                         </button>
+
                     </div>
+
                 </form>
 
-                <!-- Keterangan akun yang tersedia untuk pengujian. -->
+                <hr>
+
+                {{-- Link Registrasi --}}
+                <div class="text-center mb-3">
+
+                    <span class="text-secondary">
+                        Belum memiliki akun?
+                    </span>
+
+                    <a href="{{ route('register') }}" class="text-primary fw-semibold">
+
+                        Daftar Sekarang
+
+                    </a>
+
+                </div>
+
                 <hr>
 
                 <small class="text-secondary">
-                    Gunakan akun pengujian yang sudah tersedia di database.
+                    Gunakan email dan password yang telah didaftarkan
+                    untuk masuk ke GoBarberShop.
                 </small>
 
             </div>
+
         </div>
     </div>
 
 </body>
+
 </html>

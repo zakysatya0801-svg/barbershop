@@ -5,6 +5,21 @@
 
 @section('content')
 
+@if (session('success'))
+    <div style="
+        max-width: 1250px;
+        margin: 20px auto;
+        padding: 15px 20px;
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+        border-radius: 10px;
+    ">
+        <strong>Berhasil!</strong>
+        {{ session('success') }}
+    </div>
+@endif
+
 <style>
     .hero {
         background: linear-gradient(120deg, #101828, #34445e);
