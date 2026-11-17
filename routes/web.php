@@ -1,12 +1,12 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarbershopQrScanController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ShopDetailController;
 use App\Http\Controllers\ShopExploreController;
-use App\Http\Controllers\BookingController;
 
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureClientOwner;
@@ -20,6 +20,15 @@ use App\Http\Middleware\ResolveShopContext;
 
 Route::view('/', 'customer.home.index')
     ->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| QR CODE BARBERSHOP
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/qr/{token}', BarbershopQrScanController::class)
+    ->name('barbershops.qr.scan');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +72,7 @@ Route::post('/booking/{shop}/jadwal', [BookingController::class, 'storeSchedule'
 Route::get('/booking/{shop}/pembayaran', [BookingController::class, 'payment'])
     ->name('booking.payment');
 
-// Konfirmasi pembayaran (sementara simulasi)
+// Konfirmasi pembayaran
 Route::post('/booking/{shop}/pembayaran', [BookingController::class, 'confirmPayment'])
     ->name('booking.payment.confirm');
 
@@ -74,7 +83,7 @@ Route::post('/booking/{shop}/pembayaran', [BookingController::class, 'confirmPay
 */
 
 Route::get('/dashboard/{shop}', function (string $shop) {
-    return 'Dashboard Client Barbershop: ' . e($shop);
+    return 'Dashboard Client Barbershop: '.e($shop);
 })
     ->middleware(['auth', EnsureClientOwner::class])
     ->name('dashboard');
@@ -133,6 +142,7 @@ Route::middleware(['auth', ResolveShopContext::class])
 
         Route::view('/profil', 'base-client.profil')
             ->name('profil');
+
         Route::get('/booking/{shop}/berhasil', [BookingController::class, 'success'])
-             ->name('booking.success');
+            ->name('booking.success');
     });

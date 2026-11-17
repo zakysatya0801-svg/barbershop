@@ -23,7 +23,9 @@ class GoBarberShop extends Model
         'close_time',
     ];
 
-    // Relasi QR Token
+    /**
+     * Relasi QR Token.
+     */
     public function qrTokens(): HasMany
     {
         return $this->hasMany(
@@ -33,7 +35,9 @@ class GoBarberShop extends Model
         );
     }
 
-    // Token aktif
+    /**
+     * Mengambil token aktif terbaru.
+     */
     public function activeToken(): HasOne
     {
         return $this->hasOne(
@@ -50,7 +54,9 @@ class GoBarberShop extends Model
         });
     }
 
-    // Relasi lokasi
+    /**
+     * Relasi lokasi.
+     */
     public function location(): BelongsTo
     {
         return $this->belongsTo(
@@ -60,7 +66,9 @@ class GoBarberShop extends Model
         );
     }
 
-    // Relasi skema komisi
+    /**
+     * Relasi skema komisi.
+     */
     public function commissionSchemes(): HasMany
     {
         return $this->hasMany(
@@ -70,8 +78,9 @@ class GoBarberShop extends Model
         );
     }
 
-    // Relasi layanan
-    // Foreign key services = shop_id
+    /**
+     * Relasi layanan.
+     */
     public function services(): HasMany
     {
         return $this->hasMany(
@@ -81,8 +90,9 @@ class GoBarberShop extends Model
         );
     }
 
-    // Relasi barber
-    // Foreign key barbers = shop_id
+    /**
+     * Relasi barber.
+     */
     public function barbers(): HasMany
     {
         return $this->hasMany(
@@ -92,7 +102,9 @@ class GoBarberShop extends Model
         );
     }
 
-    // Relasi ulasan
+    /**
+     * Relasi ulasan.
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(
@@ -100,5 +112,13 @@ class GoBarberShop extends Model
             'go_barbershop_id',
             'go_barbershop_id'
         );
+    }
+
+    /**
+     * Menentukan key untuk route model binding.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'go_barbershop_id';
     }
 }
