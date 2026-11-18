@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Service extends Model
 {
+    // Menggunakan sistem pembatasan data berdasarkan tenant.
     use BelongsToTenant;
 
-    // Menentukan tabel yang digunakan model.
+    // Nama tabel database.
     protected $table = 'services';
 
-    // Menentukan primary key tabel services.
+    // Primary key tabel.
     protected $primaryKey = 'service_id';
 
+    // Kolom yang boleh diisi melalui mass assignment.
     protected $fillable = [
         'service_name',
         'photo',
@@ -23,7 +25,7 @@ class Service extends Model
         'duration',
     ];
 
-    // Setiap service dimiliki oleh satu barbershop.
+    // Relasi Service dengan barbershop pemiliknya.
     public function goBarbershop(): BelongsTo
     {
         return $this->belongsTo(
@@ -31,14 +33,5 @@ class Service extends Model
             'go_barbershop_id',
             'go_barbershop_id'
         );
-    }
-
-    // Mengatur tipe data
-    protected function casts(): array
-    {
-        return [
-            'price' => 'decimal:2',
-            'duration' => 'integer',
-        ];
     }
 }

@@ -216,15 +216,14 @@ class AuthControllerTest extends TestCase
         $ownerUser = $this->createUserWithRole('owner');
         $owner = $this->createOwnerProfile($ownerUser);
         $barbershop = $this->createBarbershop($owner, 'Barbershop Data Owner');
+        $otherOwnerUser = $this->createUserWithRole('owner');
+        $otherOwner = $this->createOwnerProfile($otherOwnerUser);
+        $otherBarbershop = $this->createBarbershop($otherOwner, 'Barbershop Owner Lain');
 
         $tenantContext = app(TenantContext::class);
         $tenantContext->set($barbershop);
 
         try {
-            $barbershop->barbers()->create([
-                'barber_name' => 'Barber Milik Owner',
-                'specialty' => 'Classic Cut',
-            ]);
             $barbershop->services()->create([
                 'service_name' => 'Service Milik Owner',
                 'price' => 50000,
@@ -234,10 +233,35 @@ class AuthControllerTest extends TestCase
             $tenantContext->clear();
         }
 
+        $tenantContext->set($otherBarbershop);
+
+        try {
+            $otherBarbershop->barbers()->create([
+                'barber_name' => 'Barber Milik Owner Lain',
+                'specialty' => 'Classic Cut',
+            ]);
+        } finally {
+            $tenantContext->clear();
+        }
+
+        $response = $this->actingAs($ownerUser)->post('/owner/barber', [
+            'go_barbershop_id' => $barbershop->go_barbershop_id,
+            'barber_name' => 'Barber Milik Owner',
+            'specialty' => 'Classic Cut',
+        ]);
+
+        $response->assertRedirectToRoute('owner.barber')
+            ->assertSessionHas('success', 'Barber berhasil ditambahkan.');
+        $this->assertDatabaseHas('barbers', [
+            'go_barbershop_id' => $barbershop->go_barbershop_id,
+            'barber_name' => 'Barber Milik Owner',
+        ]);
+
         $this->actingAs($ownerUser)
             ->get('/owner/barber')
             ->assertOk()
-            ->assertSee('Barber Milik Owner');
+            ->assertSee('Barber Milik Owner')
+            ->assertDontSee('Barber Milik Owner Lain');
 
         $this->get('/owner/service')
             ->assertOk()

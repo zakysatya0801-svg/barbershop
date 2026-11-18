@@ -4,99 +4,228 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Support\Tenancy\TenantContext;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class ServiceController extends Controller
 {
-    // Menampilkan daftar service milik Owner.
-    public function index(Request $request): View
+    /**
+     * Mengambil data Owner berdasarkan akun yang sedang login.
+     * Memastikan seluruh operasi hanya untuk barbershop milik Owner tersebut.
+     */
+    private function getOwner(Request $request)
     {
+        // Mengambil data Admin dari akun yang login.
         $admin = $request->user()->admin;
 
-        $owner = $admin->owners()->firstOrFail();
+        // Memastikan akun memiliki role Owner.
+        if (! $admin || $admin->role !== 'owner') {
+            abort(403, 'Akses khusus Owner.');
+        }
 
-        // Mengambil semua barbershop milik Owner.
-        $barbershops = $owner->goBarberShops;
+        // Mengambil data Owner.
+        $owner = $admin->owners()->first();
 
-        // Mengambil service dari barbershop milik Owner.
-        $services = Service::whereIn(
-            'go_barbershop_id',
-            $barbershops->pluck('go_barbershop_id')
-        )->with('goBarbershop')->latest()->get();
+        // Memastikan data Owner tersedia.
+        if (! $owner) {
+            abort(403, 'Data Owner tidak ditemukan.');
+        }
 
-        return view('base-client.service', compact(
-            'services',
-            'barbershops'
-        ));
+        return $owner;
     }
 
-    // Menampilkan form tambah service.
+    /**
+     * Menampilkan daftar Service milik Owner.
+     */
+    public function index(
+        Request $request,
+        TenantContext $tenantContext
+    ): View {
+
+        // Mengambil data Owner yang sedang login.
+        $owner = $this->getOwner($request);
+
+        // Mengambil seluruh barbershop milik Owner.
+        $barbershops = $owner->goBarberShops()->get();
+
+        // Menyiapkan collection untuk menampung seluruh Service.
+        $services = collect();
+
+        try {
+
+            // Mengambil Service dari setiap barbershop.
+            foreach ($barbershops as $shop) {
+
+                // Mengisi TenantContext sebelum query Service.
+                $tenantContext->set($shop);
+
+                // Mengambil Service beserta relasi barbershop.
+                $shopServices = Service::with('goBarbershop')
+                    ->latest()
+                    ->get();
+
+                // Menggabungkan hasil query.
+                $services = $services->concat($shopServices);
+            }
+
+            // Mengurutkan Service dari yang terbaru.
+            $services = $services
+                ->sortByDesc('created_at')
+                ->values();
+
+        } finally {
+
+            // Membersihkan TenantContext setelah query selesai.
+            $tenantContext->clear();
+        }
+
+        // Mengirim data ke halaman daftar Service.
+        return view('base-client.service', [
+            'owner' => $owner,
+            'barbershops' => $barbershops,
+            'services' => $services,
+        ]);
+    }
+
+    /**
+     * Menampilkan form tambah Service.
+     */
     public function create(Request $request): View
     {
-        $owner = $request->user()->admin->owners()->firstOrFail();
+        // Mengambil data Owner.
+        $owner = $this->getOwner($request);
 
-        $barbershops = $owner->goBarberShops;
+        // Mengambil seluruh barbershop milik Owner.
+        $barbershops = $owner->goBarberShops()->get();
 
-        return view('base-client.service-create', compact('barbershops'));
+        // Menampilkan form tambah Service.
+        return view('base-client.service-create', [
+            'owner' => $owner,
+            'barbershops' => $barbershops,
+        ]);
     }
 
-    // Menyimpan service baru.
-    public function store(Request $request): RedirectResponse
-    {
-        $owner = $request->user()->admin->owners()->firstOrFail();
+    /**
+     * Menyimpan Service baru.
+     */
+    public function store(
+        Request $request,
+        TenantContext $tenantContext
+    ): RedirectResponse {
 
-        // Memvalidasi data yang dikirim dari form.
+        // Mengambil data Owner.
+        $owner = $this->getOwner($request);
+
+        // Memvalidasi data dari form.
         $validated = $request->validate([
-            'go_barbershop_id' => ['required', 'integer'],
-            'service_name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'duration' => ['required', 'integer', 'min:1'],
-            'photo' => ['nullable', 'image', 'max:2048'],
+            'go_barbershop_id' => 'required|integer',
+            'service_name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'duration' => 'required|integer|min:1',
+            'photo' => 'nullable|image|max:2048',
         ]);
 
-        // Memastikan barbershop pilihan adalah milik Owner.
-        $barbershop = $owner->goBarberShops()
-            ->where('go_barbershop_id', $validated['go_barbershop_id'])
+        // Memastikan barbershop yang dipilih milik Owner login.
+        $shop = $owner->goBarberShops()
+            ->where(
+                'go_barbershop_id',
+                $validated['go_barbershop_id']
+            )
             ->firstOrFail();
 
-        // Menyimpan foto service jika diunggah.
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')
-                ->store('services', 'public');
+        try {
+
+            // Mengisi TenantContext sebelum menyimpan Service.
+            $tenantContext->set($shop);
+
+            // Menyimpan foto jika pengguna mengunggahnya.
+            $photoPath = null;
+
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')
+                    ->store('services', 'public');
+            }
+
+            // Menyimpan data Service.
+            // go_barbershop_id diisi otomatis oleh BelongsToTenant.
+            Service::create([
+                'service_name' => $validated['service_name'],
+                'price' => $validated['price'],
+                'duration' => $validated['duration'],
+                'photo' => $photoPath,
+            ]);
+
+            return redirect()
+                ->route('owner.service')
+                ->with('success', 'Service berhasil ditambahkan.');
+
+        } finally {
+
+            // Membersihkan TenantContext.
+            $tenantContext->clear();
         }
-
-        $validated['go_barbershop_id'] = $barbershop->go_barbershop_id;
-
-        // Menyimpan service ke database.
-        Service::create($validated);
-
-        return redirect()
-            ->route('owner.service')
-            ->with('success', 'Service berhasil ditambahkan.');
     }
 
-    // Menghapus service.
-    public function destroy(Request $request, Service $service): RedirectResponse
-    {
-        $owner = $request->user()->admin->owners()->firstOrFail();
+    /**
+     * Menghapus Service milik Owner.
+     */
+    public function destroy(
+        Request $request,
+        $id,
+        TenantContext $tenantContext
+    ): RedirectResponse {
 
-        // Memastikan service milik barbershop Owner.
-        $owner->goBarberShops()
-            ->where('go_barbershop_id', $service->go_barbershop_id)
-            ->firstOrFail();
+        // Mengambil data Owner.
+        $owner = $this->getOwner($request);
 
-        // Menghapus foto service jika ada.
-        if ($service->photo) {
-            Storage::disk('public')->delete($service->photo);
+        // Mengambil seluruh barbershop milik Owner.
+        $barbershops = $owner->goBarberShops()->get();
+
+        // Menyiapkan variabel Service yang akan dihapus.
+        $service = null;
+
+        try {
+
+            // Memeriksa Service pada setiap barbershop milik Owner.
+            foreach ($barbershops as $shop) {
+
+                // Mengisi konteks tenant sebelum query.
+                $tenantContext->set($shop);
+
+                // Mencari Service berdasarkan ID.
+                $service = Service::whereKey($id)->first();
+
+                // Jika ditemukan, hentikan pencarian.
+                if ($service) {
+                    break;
+                }
+            }
+
+            // Jika tidak ditemukan di seluruh barbershop Owner,
+            // berarti Service tidak dimiliki oleh Owner ini.
+            if (! $service) {
+                abort(404, 'Service tidak ditemukan.');
+            }
+
+            // Menghapus foto Service jika tersedia.
+            if ($service->photo) {
+                Storage::disk('public')->delete($service->photo);
+            }
+
+            // Menghapus data Service.
+            $service->delete();
+
+            return redirect()
+                ->route('owner.service')
+                ->with('success', 'Service berhasil dihapus.');
+
+        } finally {
+
+            // Membersihkan TenantContext setelah proses selesai.
+            $tenantContext->clear();
         }
-
-        $service->delete();
-
-        return redirect()
-            ->route('owner.service')
-            ->with('success', 'Service berhasil dihapus.');
     }
 }

@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers;
 
+// Import Request untuk mengambil data pengguna yang sedang login.
 use Illuminate\Http\Request;
+// Import View sebagai tipe nilai kembalian halaman.
 use Illuminate\View\View;
 
+// Nama class harus OwnerDashboardController,
+// karena nama file-nya juga OwnerDashboardController.php.
 class OwnerDashboardController extends Controller
 {
     /**
-     * Menampilkan dashboard dan seluruh barbershop milik Owner.
+     * Menampilkan dashboard Owner.
      */
     public function index(Request $request): View
     {
+        // Mengambil pengguna yang sedang login.
         $user = $request->user();
 
-        // Mengambil data Admin dari akun yang sedang login.
+        // Mengambil data Admin yang terhubung dengan pengguna.
         $admin = $user->admin;
 
+        // Pastikan data Admin tersedia.
         if (! $admin) {
             abort(403, 'Data Admin tidak ditemukan.');
         }
@@ -26,12 +32,15 @@ class OwnerDashboardController extends Controller
             ->with('goBarberShops')
             ->first();
 
+        // Pastikan data Owner tersedia.
         if (! $owner) {
             abort(403, 'Data Owner tidak ditemukan.');
         }
 
+        // Mengambil koleksi barbershop milik Owner.
         $barbershops = $owner->goBarberShops;
 
+        // Mengirim data ke halaman dashboard Owner.
         return view('base-client.dashboard', [
             'owner' => $owner,
             'barbershops' => $barbershops,

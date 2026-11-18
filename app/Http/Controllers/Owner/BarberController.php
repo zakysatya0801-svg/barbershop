@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Barber;
-use App\Models\GoBarberShop;
+use App\Support\Tenancy\TenantContext;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class BarberController extends Controller
 {
@@ -25,10 +25,14 @@ class BarberController extends Controller
         $barbershops = $owner->goBarberShops;
 
         // Mengambil barber dari seluruh barbershop milik Owner.
-        $barbers = Barber::whereIn(
-            'go_barbershop_id',
-            $barbershops->pluck('go_barbershop_id')
-        )->with('goBarbershop')->latest()->get();
+        $barbers = Barber::withoutGlobalScope('tenant')
+            ->whereIn(
+                'go_barbershop_id',
+                $barbershops->pluck('go_barbershop_id')
+            )
+            ->with('goBarbershop')
+            ->latest()
+            ->get();
 
         // Mengirim data ke halaman daftar barber.
         return view('base-client.barber', compact(
@@ -48,38 +52,71 @@ class BarberController extends Controller
     }
 
     // Menyimpan barber baru.
-    public function store(Request $request): RedirectResponse
-    {
-        $owner = $request->user()->admin->owners()->firstOrFail();
 
-        // Memeriksa input dari form.
+    public function store(
+        Request $request,
+        TenantContext $tenantContext
+    ): RedirectResponse {
+
+        // Mengambil akun Owner yang sedang login.
+        $admin = $request->user()->admin;
+
+        // Memastikan akun benar-benar memiliki role Owner.
+        if (! $admin || $admin->role !== 'owner') {
+            abort(403, 'Akses khusus Owner.');
+        }
+
+        // Mengambil data Owner.
+        $owner = $admin->owners()->first();
+
+        if (! $owner) {
+            abort(403, 'Data Owner tidak ditemukan.');
+        }
+
+        // Memvalidasi data yang dikirim dari form.
         $validated = $request->validate([
-            'go_barbershop_id' => ['required', 'integer'],
-            'barber_name' => ['required', 'string', 'max:255'],
-            'specialty' => ['required', 'string', 'max:255'],
-            'photo' => ['nullable', 'image', 'max:2048'],
+            'go_barbershop_id' => 'required|integer',
+            'barber_name' => 'required|string|max:255',
+            'specialty' => 'required|string|max:255',
+            'photo' => 'nullable|image|max:2048',
         ]);
 
-        // Memastikan barbershop benar-benar milik Owner yang login.
-        $barbershop = $owner->goBarberShops()
+        // Memastikan barbershop yang dipilih milik Owner yang login.
+        $shop = $owner->goBarberShops()
             ->where('go_barbershop_id', $validated['go_barbershop_id'])
             ->firstOrFail();
 
-        // Menyimpan foto ke storage jika Owner mengunggah foto.
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')
-                ->store('barbers', 'public');
+        try {
+
+            // Mengisi TenantContext dengan barbershop pilihan.
+            // Ini wajib dilakukan sebelum Barber::create().
+            $tenantContext->set($shop);
+
+            // Menyimpan foto jika Owner mengunggahnya.
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = $request->file('photo')
+                    ->store('barbers', 'public');
+            }
+
+            // Membuat data Barber.
+            // Trait BelongsToTenant akan otomatis mengisi go_barbershop_id
+            // berdasarkan TenantContext yang sudah diatur di atas.
+            Barber::create([
+                'barber_name' => $validated['barber_name'],
+                'specialty' => $validated['specialty'],
+                'photo' => $validated['photo'] ?? null,
+            ]);
+
+            return redirect()
+                ->route('owner.barber')
+                ->with('success', 'Barber berhasil ditambahkan.');
+
+        } finally {
+
+            // Membersihkan TenantContext setelah proses selesai.
+            // Agar tidak digunakan oleh proses berikutnya secara tidak sengaja.
+            $tenantContext->clear();
         }
-
-        // Mengisi foreign key berdasarkan barbershop yang sudah diverifikasi.
-        $validated['go_barbershop_id'] = $barbershop->go_barbershop_id;
-
-        // Membuat data barber baru.
-        Barber::create($validated);
-
-        return redirect()
-            ->route('owner.barber')
-            ->with('success', 'Data barber berhasil ditambahkan.');
     }
 
     // Menghapus data barber.
