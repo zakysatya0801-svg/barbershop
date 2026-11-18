@@ -14,7 +14,7 @@ use App\Http\Controllers\ShopExploreController;
 use App\Http\Middleware\EnsureClientOwner;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')
+Route::view('/', 'customer.home.index')
     ->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])
