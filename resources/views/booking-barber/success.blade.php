@@ -17,17 +17,18 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f3f5f7;
-            color: #101828;
+            background: #0d0f14;
+            color: #ffffff;
         }
 
         nav {
-            background: white;
+            background: #151821;
             padding: 20px 6%;
+            border-bottom: 1px solid #262a35;
         }
 
         nav a {
-            color: #101828;
+            color: #ffffff;
             font-size: 21px;
             font-weight: 800;
             text-decoration: none;
@@ -40,7 +41,8 @@
         }
 
         .card {
-            background: white;
+            background: #151821;
+            border: 1px solid #262a35;
             border-radius: 20px;
             padding: 35px;
             text-align: center;
@@ -49,8 +51,9 @@
         .success-icon {
             width: 75px;
             height: 75px;
-            background: #dcfce7;
-            color: #16a34a;
+            background: rgba(22, 163, 74, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.25);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -62,30 +65,31 @@
         h1 {
             font-size: 25px;
             margin-bottom: 10px;
+            color: #ffffff;
         }
 
         .description {
-            color: #89919e;
+            color: #a4a8b3;
             font-size: 13px;
             line-height: 1.7;
         }
 
         .booking-code {
-            background: #fff8e8;
-            border: 1px dashed #e9a21a;
+            background: #1c202b;
+            border: 1px dashed #f5a623;
             border-radius: 12px;
             padding: 20px;
             margin: 25px 0;
         }
 
         .booking-code small {
-            color: #89919e;
+            color: #a4a8b3;
             font-size: 11px;
         }
 
         .booking-code h2 {
             margin-top: 8px;
-            color: #b77900;
+            color: #f5a623;
             letter-spacing: 2px;
         }
 
@@ -97,6 +101,7 @@
         .details h3 {
             font-size: 15px;
             margin-bottom: 12px;
+            color: #ffffff;
         }
 
         .row {
@@ -104,26 +109,28 @@
             justify-content: space-between;
             gap: 15px;
             padding: 12px 0;
-            border-bottom: 1px solid #edf0f2;
+            border-bottom: 1px solid #262a35;
             font-size: 12px;
         }
 
         .row span {
-            color: #89919e;
+            color: #a4a8b3;
         }
 
         .row strong {
+            color: #ffffff;
             text-align: right;
         }
 
         .total {
             font-size: 17px;
-            color: #b77900;
+            color: #f5a623 !important;
         }
 
         .notice {
-            background: #fff7e6;
-            color: #8a5b00;
+            background: rgba(245, 166, 35, 0.10);
+            border: 1px solid rgba(245, 166, 35, 0.20);
+            color: #ffc15a;
             border-radius: 10px;
             padding: 14px;
             margin-top: 22px;
@@ -134,14 +141,19 @@
 
         .btn {
             display: block;
-            background: #090d19;
-            color: white;
+            background: #f5a623;
+            color: #10131b;
             text-decoration: none;
             padding: 15px;
             border-radius: 30px;
             font-size: 13px;
             font-weight: 800;
             margin-top: 25px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #ffc15a;
         }
 
         @media(max-width: 500px) {

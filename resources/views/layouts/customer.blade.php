@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>@yield('title', 'GoBarber')</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,12 +35,14 @@
             font: inherit;
         }
 
+        /* NAVBAR */
         .site-header {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, .97);
-            border-bottom: 1px solid #e8e9ed;
+            background: rgba(13, 15, 20, .97);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,.09);
         }
 
         .nav-wrap {
@@ -57,6 +61,7 @@
             gap: 10px;
             font-size: 22px;
             font-weight: 800;
+            color: white;
             white-space: nowrap;
         }
 
@@ -65,68 +70,84 @@
             height: 39px;
             display: grid;
             place-items: center;
-            background: #101828;
-            color: white;
+            background: #f5a623;
+            color: #171717;
             border-radius: 12px;
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin-left: auto;
         }
 
         .nav-links a {
-            padding: 11px 15px;
+            padding: 11px 16px;
             border-radius: 30px;
             font-size: 13px;
             font-weight: 700;
-            color: #596071;
+            color: #c5c7ce;
             transition: .2s;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
-            background: #101828;
-            color: white;
+            background: rgba(245,166,35,.12);
+            color: #f5a623;
         }
 
+        /* BUTTON */
         .btn {
             display: inline-flex;
             justify-content: center;
             align-items: center;
             border: 0;
             border-radius: 30px;
-            padding: 13px 22px;
-            background: #101828;
-            color: white;
-            font-weight: 700;
+            padding: 12px 22px;
+            background: #f5a623;
+            color: #171717;
+            font-size: 13px;
+            font-weight: 800;
             cursor: pointer;
             transition: .2s;
+            white-space: nowrap;
         }
 
         .btn:hover {
-            background: #344054;
+            background: #ffc15a;
             transform: translateY(-1px);
         }
 
         .btn-light {
-            background: white;
-            color: #101828;
-            border: 1px solid #e3e5e9;
+            background: #252a36;
+            color: white;
+            border: 1px solid rgba(255,255,255,.15);
         }
 
         .btn-light:hover {
-            background: #f0f1f4;
+            background: #343a48;
+            color: white;
         }
 
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-auth form {
+            margin: 0;
+        }
+
+        /* CONTENT */
         .page-main {
             min-height: 55vh;
         }
 
+        /* FOOTER */
         .site-footer {
-            background: #101828;
+            background: #080a0f;
             color: white;
             margin-top: 70px;
         }
@@ -146,6 +167,7 @@
         .footer-grid h3 {
             font-size: 14px;
             margin: 0 0 18px;
+            color: white;
         }
 
         .footer-grid p,
@@ -162,13 +184,13 @@
         }
 
         .footer-grid a:hover {
-            color: white;
+            color: #f5a623;
         }
 
         .footer-bottom {
             margin-top: 35px;
             padding-top: 20px;
-            border-top: 1px solid #344054;
+            border-top: 1px solid #343844;
             display: flex;
             justify-content: space-between;
             gap: 15px;
@@ -176,11 +198,8 @@
             font-size: 11px;
         }
 
-        .mobile-menu {
-            display: none;
-        }
-
-        @media(max-width:900px) {
+        /* RESPONSIVE */
+        @media(max-width: 900px) {
             .nav-wrap {
                 flex-wrap: wrap;
                 padding: 14px 5%;
@@ -190,12 +209,8 @@
             .nav-links {
                 order: 3;
                 width: 100%;
-                overflow-x: auto;
                 margin: 0;
-            }
-
-            .nav-links a {
-                white-space: nowrap;
+                justify-content: center;
             }
 
             .footer-grid {
@@ -203,24 +218,41 @@
             }
         }
 
-        @media(max-width:560px) {
+        @media(max-width: 560px) {
+            .nav-wrap {
+                min-height: 65px;
+                gap: 10px;
+            }
+
             .brand {
                 font-size: 19px;
             }
 
-            .nav-wrap>.btn {
+            .brand-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .nav-auth {
                 margin-left: auto;
-                padding: 10px 14px;
-                font-size: 12px;
+            }
+
+            .nav-auth .btn {
+                padding: 9px 12px;
+                font-size: 11px;
             }
 
             .nav-links {
-                gap: 2px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                gap: 5px;
+                padding-bottom: 3px;
             }
 
             .nav-links a {
-                padding: 9px 11px;
+                padding: 9px 12px;
                 font-size: 11px;
+                white-space: nowrap;
             }
 
             .footer-grid {
@@ -229,6 +261,7 @@
 
             .footer-bottom {
                 flex-direction: column;
+                text-align: center;
             }
         }
     </style>
@@ -238,67 +271,81 @@
 
 <body>
 
+    <!-- NAVBAR -->
     <header class="site-header">
         <div class="nav-wrap">
+
             <a href="{{ route('home') }}" class="brand">
                 <span class="brand-icon">💈</span>
                 GoBarber
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+
+                <a href="{{ route('home') }}"
+                    class="{{ request()->routeIs('home') ? 'active' : '' }}">
+                    Home
+                </a>
 
                 <a href="{{ route('shops.explore') }}"
-                    class="{{ request()->routeIs('shops.*') ? 'active' : '' }}">Jelajah Barbershop</a>
+                    class="{{ request()->routeIs('shops.explore') || request()->routeIs('shops.show') ? 'active' : '' }}">
+                    Jelajah Barbershop
+                </a>
 
-                <a href="{{ route('shops.explore') }}#kategori">Layanan &amp; Promo</a>
-                <a href="{{ route('login') }}">Cek Reservasi</a>
-                <a href="{{ route('login') }}">Bantuan</a>
             </nav>
 
+            <div class="nav-auth">
 
-            @guest
-                {{-- Tombol untuk pengguna yang belum login --}}
-                <a href="{{ route('login') }}" class="btn">
-                    Masuk / Daftar
-                </a>
-            @endguest
-
-            @auth
-                {{-- Tombol Dashboard untuk Owner --}}
-                @if (auth()->user()->hasRole('owner'))
-                    <a href="{{ route('client.dashboard') }}" class="btn btn-light">
-                        Dashboard
+                @guest
+                    <a href="{{ route('login') }}" class="btn">
+                        Masuk / Daftar
                     </a>
+                @endguest
 
-                    {{-- Tombol Logout --}}
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
+                @auth
+                    @if (auth()->user()->hasRole('owner'))
+                        <a href="{{ route('client.dashboard') }}" class="btn btn-light">
+                            Dashboard
+                        </a>
 
-                        <button type="submit" class="btn">
-                            Logout
-                        </button>
-                    </form>
-                @endif
-            @endauth
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn">
+                                Logout
+                            </button>
+                        </form>
+                    @endif
+                @endauth
+
+            </div>
 
         </div>
     </header>
 
+    <!-- MAIN CONTENT -->
     <main class="page-main">
         @yield('content')
     </main>
 
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-inner">
+
             <div class="footer-grid">
+
                 <div>
                     <a href="{{ route('home') }}" class="brand">
-                        <span class="brand-icon">💈</span> GoBarber
+                        <span class="brand-icon">💈</span>
+                        GoBarber
                     </a>
-                    <p>Platform digital reservasi dan antrean potong rambut pria. Temukan barbershop terbaik, pilih
-                        layanan, dan reservasi dengan mudah.</p>
-                    <h3>Metode pembayaran digital</h3>
+
+                    <p>
+                        Platform digital reservasi dan antrean potong rambut pria.
+                        Temukan barbershop terbaik, pilih layanan, dan reservasi
+                        dengan mudah melalui GoBarber.
+                    </p>
+
+                    <h3>Metode Pembayaran Digital</h3>
                     <p>QRIS &nbsp; GoPay &nbsp; OVO &nbsp; BCA VA</p>
                 </div>
 
@@ -332,16 +379,24 @@
                         <li>support@gobarber.id</li>
                     </ul>
                 </div>
+
             </div>
 
             <div class="footer-bottom">
-                <span>© {{ date('Y') }} PT GoBarber Digital Nusantara. Hak Cipta Dilindungi.</span>
-                <span>Unduh Aplikasi: &nbsp; Google Play &nbsp; | &nbsp; App Store</span>
+                <span>
+                    © {{ date('Y') }} PT GoBarber Digital Nusantara.
+                    Hak Cipta Dilindungi.
+                </span>
+
+                <span>
+                    Designed for a better grooming experience.
+                </span>
             </div>
+
         </div>
     </footer>
 
     @stack('scripts')
-</body>
 
+</body>
 </html>

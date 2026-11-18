@@ -17,39 +17,44 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f3f5f7;
-            color: #101828;
+            background: #0d0f14;
+            color: #f5f5f5;
         }
 
         .navbar {
             height: 62px;
-            background: white;
+            background: #151821;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 5.2%;
+            border-bottom: 1px solid #262a35;
         }
 
         .logo {
             font-size: 21px;
             font-weight: 800;
-            color: #090d19;
+            color: #f5a623;
             text-decoration: none;
         }
 
         .navbar a:last-child {
             font-size: 13px;
-            color: #101828;
+            color: #f5f5f5;
             text-decoration: none;
         }
 
+        .navbar a:last-child:hover {
+            color: #f5a623;
+        }
+
         .page-heading {
-            background: #eef0f3;
+            background: #151821;
             padding: 35px 5.2%;
         }
 
         .step-label {
-            color: #c47b00;
+            color: #f5a623;
             font-size: 11px;
             font-weight: 800;
             margin-bottom: 10px;
@@ -58,10 +63,11 @@
         .page-heading h1 {
             font-size: 27px;
             margin-bottom: 8px;
+            color: #fff;
         }
 
         .page-heading p {
-            color: #7b8492;
+            color: #a4a8b3;
             font-size: 13px;
         }
 
@@ -78,12 +84,13 @@
             text-align: center;
             position: relative;
             z-index: 1;
+            color: #a4a8b3;
         }
 
         .step-circle {
             width: 36px;
             height: 36px;
-            background: #090d19;
+            background: #292d38;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -96,8 +103,16 @@
 
         .step.done .step-circle,
         .step.active .step-circle {
-            background: #ffa500;
+            background: #f5a623;
             color: #090d19;
+        }
+
+        .step.active .step-name {
+            color: #f5a623;
+        }
+
+        .step.done .step-name {
+            color: #d1d5db;
         }
 
         .step-name {
@@ -116,13 +131,14 @@
         }
 
         .card {
-            background: white;
+            background: #151821;
+            border: 1px solid #262a35;
             border-radius: 18px;
             padding: 25px;
         }
 
         .section-label {
-            color: #c47b00;
+            color: #f5a623;
             font-size: 11px;
             font-weight: 800;
             margin-bottom: 8px;
@@ -131,10 +147,11 @@
         .card h2 {
             font-size: 18px;
             margin-bottom: 8px;
+            color: #fff;
         }
 
         .section-description {
-            color: #89919e;
+            color: #a4a8b3;
             font-size: 12px;
             margin-bottom: 23px;
         }
@@ -160,7 +177,8 @@
             display: flex;
             align-items: center;
             gap: 13px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #303441;
+            background: #1c202b;
             border-radius: 12px;
             padding: 13px;
             transition: .2s;
@@ -168,12 +186,12 @@
         }
 
         .barber-option input:checked + .barber-box {
-            border: 2px solid #ffa500;
-            background: #fffaf0;
+            border: 2px solid #f5a623;
+            background: #25232a;
         }
 
         .barber-option input:focus-visible + .barber-box {
-            outline: 3px solid rgba(255,165,0,.3);
+            outline: 3px solid rgba(245,166,35,.3);
         }
 
         .barber-photo {
@@ -181,7 +199,7 @@
             height: 58px;
             border-radius: 50%;
             object-fit: cover;
-            background: #eef0f3;
+            background: #292d38;
             flex-shrink: 0;
         }
 
@@ -189,13 +207,13 @@
             width: 58px;
             height: 58px;
             border-radius: 50%;
-            background: #eef0f3;
+            background: #292d38;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
             font-size: 19px;
-            color: #475467;
+            color: #f5a623;
             flex-shrink: 0;
         }
 
@@ -203,23 +221,24 @@
             font-size: 13px;
             font-weight: 800;
             margin-bottom: 5px;
+            color: #fff;
         }
 
         .barber-specialty {
-            color: #89919e;
+            color: #a4a8b3;
             font-size: 11px;
         }
 
         .selected-check {
             margin-left: auto;
-            color: #d97706;
+            color: #f5a623;
             font-size: 18px;
             font-weight: 800;
         }
 
         .schedule-section {
             margin-top: 30px;
-            border-top: 1px solid #edf0f2;
+            border-top: 1px solid #303441;
             padding-top: 25px;
         }
 
@@ -232,27 +251,33 @@
             font-size: 13px;
             font-weight: 700;
             margin-bottom: 9px;
+            color: #f5f5f5;
         }
 
         .form-control {
             width: 100%;
             padding: 13px;
-            border: 1px solid #dfe3e8;
+            border: 1px solid #303441;
             border-radius: 9px;
             font-family: inherit;
             font-size: 13px;
-            background: white;
-            color: #101828;
+            background: #1c202b;
+            color: #f5f5f5;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #ffa500;
-            box-shadow: 0 0 0 3px rgba(255,165,0,.12);
+            border-color: #f5a623;
+            box-shadow: 0 0 0 3px rgba(245,166,35,.12);
+        }
+
+        .form-control::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
         }
 
         .error-message {
-            color: #dc2626;
+            color: #f87171;
             font-size: 12px;
             margin-top: 7px;
         }
@@ -267,35 +292,41 @@
             justify-content: space-between;
             gap: 15px;
             padding: 14px 0;
-            border-bottom: 1px solid #edf0f2;
+            border-bottom: 1px solid #303441;
             font-size: 12px;
         }
 
         .summary-row span:first-child {
-            color: #89919e;
+            color: #a4a8b3;
         }
 
         .summary-row strong {
             text-align: right;
             font-size: 12px;
+            color: #fff;
         }
 
         .service-summary {
             padding: 12px 0;
-            border-bottom: 1px solid #edf0f2;
+            border-bottom: 1px solid #303441;
         }
 
         .service-summary-name {
             font-size: 12px;
             font-weight: 700;
+            color: #fff;
         }
 
         .service-summary-detail {
             display: flex;
             justify-content: space-between;
-            color: #89919e;
+            color: #a4a8b3;
             font-size: 11px;
             margin-top: 5px;
+        }
+
+        .service-summary-detail strong {
+            color: #f5a623;
         }
 
         .total-row {
@@ -307,10 +338,12 @@
 
         .total-row span {
             font-size: 13px;
+            color: #fff;
         }
 
         .total-row strong {
             font-size: 21px;
+            color: #f5a623;
         }
 
         .btn-next {
@@ -318,8 +351,8 @@
             width: 100%;
             border: none;
             border-radius: 30px;
-            background: #090d19;
-            color: white;
+            background: #f5a623;
+            color: #111;
             padding: 16px;
             font-family: inherit;
             font-weight: 800;
@@ -328,20 +361,24 @@
         }
 
         .btn-next:hover {
-            background: #252b3b;
+            background: #ffc15a;
         }
 
         .btn-back {
             display: block;
             text-align: center;
-            color: #667085;
+            color: #a4a8b3;
             text-decoration: none;
             font-size: 12px;
             margin-top: 15px;
         }
 
+        .btn-back:hover {
+            color: #f5a623;
+        }
+
         .empty-state {
-            color: #89919e;
+            color: #a4a8b3;
             padding: 20px 0;
             font-size: 13px;
         }
@@ -429,7 +466,7 @@
             </p>
 
             @if ($errors->any())
-                <div style="background:#fee2e2;color:#991b1b;padding:13px;border-radius:9px;margin-bottom:18px;font-size:12px;">
+                <div style="background:#3b2025;color:#fca5a5;padding:13px;border-radius:9px;margin-bottom:18px;font-size:12px;">
                     <strong>Periksa kembali pilihanmu:</strong>
                     <ul style="padding-left:20px;margin-top:6px;">
                         @foreach ($errors->all() as $error)
@@ -561,7 +598,7 @@
             </div>
 
             <div style="padding-top:15px;">
-                <div style="font-size:12px;font-weight:700;margin-bottom:5px;">
+                <div style="font-size:12px;font-weight:700;margin-bottom:5px;color:#fff;">
                     Layanan Dipilih
                 </div>
 
@@ -598,7 +635,7 @@
                 </strong>
             </div>
 
-            <p style="font-size:11px;color:#89919e;line-height:1.6;">
+            <p style="font-size:11px;color:#a4a8b3;line-height:1.6;">
                 Pastikan barber, tanggal, dan jam yang kamu pilih sudah benar.
             </p>
 
