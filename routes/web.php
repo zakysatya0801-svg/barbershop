@@ -1,27 +1,49 @@
-
 <?php
-
-use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarbershopQrScanController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Owner\BarberController;
+use App\Http\Controllers\Owner\BarbershopController;
+use App\Http\Controllers\Owner\BookingController as OwnerBookingController;
+use App\Http\Controllers\Owner\ProfileController;
+use App\Http\Controllers\Owner\ServiceController;
+use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\ShopDetailController;
 use App\Http\Controllers\ShopExploreController;
-use App\Http\Controllers\Owner\ServiceController;
-
-use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureClientOwner;
-use App\Http\Middleware\ResolveShopContext;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN UTAMA PELANGGAN
+| HOME
 |--------------------------------------------------------------------------
 */
 
 Route::view('/', 'customer.home.index')
     ->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| AUTENTIKASI
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.process');
+
+Route::get('/register', [AuthController::class, 'showRegister'])
+    ->name('register');
+
+Route::post('/register', [AuthController::class, 'register'])
+    ->name('register.process');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -97,68 +119,75 @@ Route::get('/dashboard/{shop}', function (string $shop) {
 
 /*
 |--------------------------------------------------------------------------
-| AUTENTIKASI
+| DASHBOARD OWNER
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [AuthController::class, 'showLogin'])
-    ->name('login');
-
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login.process');
-
-Route::get('/register', [AuthController::class, 'showRegister'])
-    ->name('register');
-
-Route::post('/register', [AuthController::class, 'register'])
-    ->name('register.process');
-
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
+Route::get('/owner/dashboard', [OwnerDashboardController::class, 'index'])
+    ->middleware(['auth', EnsureClientOwner::class])
+    ->name('owner.dashboard');
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN
+| FITUR OWNER
 |--------------------------------------------------------------------------
 */
 
-Route::view('/admin/dashboard', 'pages.admin.dashboard')
-    ->middleware(['auth', EnsureAdmin::class])
-    ->name('admin.dashboard');
-
-/*
-|--------------------------------------------------------------------------
-| HALAMAN OWNER
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware(['auth', ResolveShopContext::class])
+Route::middleware(['auth', EnsureClientOwner::class])
     ->prefix('owner')
     ->name('owner.')
     ->group(function (): void {
 
-        Route::view('/barbershop', 'base-client.barbershop')
+        // Barbershop
+        Route::get('/barbershop', [BarbershopController::class, 'index'])
             ->name('barbershop');
 
-        Route::view('/booking', 'base-client.booking')
-            ->name('booking');
+        Route::get('/barbershop/create', [BarbershopController::class, 'create'])
+            ->name('barbershop.create');
 
-        Route::view('/barber', 'base-client.barber')
+        Route::post('/barbershop', [BarbershopController::class, 'store'])
+            ->name('barbershop.store');
+
+        Route::get('/barbershop/{id}/edit', [BarbershopController::class, 'edit'])
+            ->name('barbershop.edit');
+
+        Route::put('/barbershop/{id}', [BarbershopController::class, 'update'])
+            ->name('barbershop.update');
+
+        // Barber
+        Route::get('/barber', [BarberController::class, 'index'])
             ->name('barber');
 
-        Route::view('/profil', 'base-client.profil')
+        Route::get('/barber/create', [BarberController::class, 'create'])
+            ->name('barber.create');
+
+        Route::post('/barber', [BarberController::class, 'store'])
+            ->name('barber.store');
+
+        Route::delete('/barber/{barber}', [BarberController::class, 'destroy'])
+            ->name('barber.destroy');
+
+        // Service
+        Route::get('/service', [ServiceController::class, 'index'])
+            ->name('service');
+
+        Route::get('/service/create', [ServiceController::class, 'create'])
+            ->name('service.create');
+
+        Route::post('/service', [ServiceController::class, 'store'])
+            ->name('service.store');
+
+        Route::delete('/service/{id}', [ServiceController::class, 'destroy'])
+            ->name('service.destroy');
+
+        // Booking owner
+        Route::get('/booking', [OwnerBookingController::class, 'index'])
+            ->name('booking');
+
+        // Profil owner
+        Route::get('/profil', [ProfileController::class, 'edit'])
             ->name('profil');
 
-        /*
-        |--------------------------------------------------------------------------
-        | CRUD LAYANAN BARBERSHOP - MODUL 7
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('layanan', ServiceController::class)
-            ->except(['show'])
-            ->parameters([
-                'layanan' => 'service',
-            ]);
+        Route::put('/profil', [ProfileController::class, 'update'])
+            ->name('profil.update');
     });

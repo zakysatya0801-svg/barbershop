@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,10 +45,13 @@ class GoBarberShop extends Model
             BarbershopQrToken::class,
             'go_barbershop_id',
             'go_barbershop_id'
-        )->ofMany('issued_at', 'max', function ($query) {
+        )->ofMany([
+            'issued_at' => 'max',
+            'id' => 'max',
+        ], function (Builder $query): void {
             $query->where('status', 'active')
                 ->whereNull('revoked_at')
-                ->where(function ($query) {
+                ->where(function (Builder $query): void {
                     $query->whereNull('expires_at')
                         ->orWhere('expires_at', '>', now());
                 });
@@ -99,7 +103,7 @@ class GoBarberShop extends Model
     {
         return $this->hasMany(
             Barber::class,
-            'shop_id',
+            'go_barbershop_id',
             'go_barbershop_id'
         );
     }

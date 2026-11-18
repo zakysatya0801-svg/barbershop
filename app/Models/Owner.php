@@ -15,7 +15,7 @@ class Owner extends Model
     protected $fillable = [
         'nama_owners',
         'email',
-        'phonr',
+        'phone',
         'admin_id',
     ];
 

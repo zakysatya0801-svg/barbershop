@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barber;
 use App\Models\GoBarberShop;
+use App\Modules\Catalog\Services\PublicCatalogQuery;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -16,11 +16,8 @@ class BookingController extends Controller
             ->where('go_barbershop_id', $shop)
             ->firstOrFail();
 
-        $services = $barbershop->services()
-            ->withoutGlobalScope('tenant')
-            ->where('is_available', true)
-            ->orderBy('service_name')
-            ->get();
+        $services = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['services'];
 
         return view('booking-barber.services', compact(
             'barbershop',
@@ -39,8 +36,10 @@ class BookingController extends Controller
             'service_ids.*' => ['required', 'integer', 'distinct'],
         ]);
 
-        $serviceIds = $barbershop->services()
-            ->withoutGlobalScope('tenant')
+        $availableServices = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['services'];
+
+        $serviceIds = $availableServices
             ->whereIn('service_id', $validated['service_ids'])
             ->where('is_available', true)
             ->pluck('service_id')
@@ -73,7 +72,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['service_ids'])
         ) {
@@ -81,19 +80,19 @@ class BookingController extends Controller
                 ->with('error', 'Silakan pilih layanan terlebih dahulu.');
         }
 
-        $services = $barbershop->services()
-            ->withoutGlobalScope('tenant')
+        $catalog = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop);
+
+        $services = $catalog['services']
             ->whereIn('service_id', $booking['service_ids'])
-            ->get();
+            ->values();
 
         if ($services->count() !== count($booking['service_ids'])) {
             return redirect()->route('booking', $shop)
                 ->with('error', 'Data layanan tidak ditemukan. Silakan pilih kembali.');
         }
 
-        $barbers = $barbershop->barbers()
-            ->withoutGlobalScope('tenant')
-            ->get();
+        $barbers = $catalog['barbers'];
 
         return view('booking-barber.schedule', compact(
             'barbershop',
@@ -111,7 +110,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['service_ids'])
         ) {
@@ -124,12 +123,15 @@ class BookingController extends Controller
             'booking_time' => ['required', 'date_format:H:i'],
         ]);
 
-        $barber = Barber::withoutGlobalScope('tenant')
-            ->where('barber_id', $validated['barber_id'])
-            ->where('shop_id', $barbershop->go_barbershop_id)
-            ->first();
+        $barbers = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['barbers'];
 
-        if (!$barber) {
+        $barber = $barbers->firstWhere(
+            'barber_id',
+            $validated['barber_id']
+        );
+
+        if (! $barber) {
             throw ValidationException::withMessages([
                 'barber_id' => 'Barber tidak ditemukan pada barbershop ini.',
             ]);
@@ -154,7 +156,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['barber_id']) ||
             empty($booking['service_ids'])
@@ -162,10 +164,15 @@ class BookingController extends Controller
             return redirect()->route('booking', $shop);
         }
 
-        $services = $barbershop->services()
-            ->withoutGlobalScope('tenant')
+        $services = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['services']
             ->whereIn('service_id', $booking['service_ids'])
-            ->get();
+            ->values();
+
+        if ($services->count() !== count($booking['service_ids'])) {
+            return redirect()->route('booking', $shop)
+                ->with('error', 'Data layanan tidak ditemukan. Silakan ulangi booking.');
+        }
 
         $total = $services->sum('price');
         $duration = $services->sum('duration');
@@ -188,7 +195,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['barber_id']) ||
             empty($booking['service_ids'])
@@ -218,7 +225,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['booking_code']) ||
             empty($booking['service_ids'])
@@ -226,10 +233,10 @@ class BookingController extends Controller
             return redirect()->route('booking', $shop);
         }
 
-        $services = $barbershop->services()
-            ->withoutGlobalScope('tenant')
+        $services = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['services']
             ->whereIn('service_id', $booking['service_ids'])
-            ->get();
+            ->values();
 
         $total = $services->sum('price');
 
@@ -250,7 +257,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['barber_id']) ||
             empty($booking['service_ids'])
@@ -276,7 +283,7 @@ class BookingController extends Controller
         $booking = session('booking');
 
         if (
-            !$booking ||
+            ! $booking ||
             ($booking['shop_id'] ?? null) != $barbershop->go_barbershop_id ||
             empty($booking['service_ids'])
         ) {
@@ -284,10 +291,10 @@ class BookingController extends Controller
                 ->with('error', 'Data booking tidak ditemukan. Silakan mulai booking kembali.');
         }
 
-        $services = $barbershop->services()
-            ->withoutGlobalScope('tenant')
+        $services = app(PublicCatalogQuery::class)
+            ->forBarbershop($barbershop)['services']
             ->whereIn('service_id', $booking['service_ids'])
-            ->get();
+            ->values();
 
         $total = $services->sum('price');
 
