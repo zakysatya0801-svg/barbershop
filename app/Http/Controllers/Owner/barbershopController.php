@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use App\Models\Barber;
 use App\Models\Owner;
-use App\Support\Tenancy\TenantContext;
 use Illuminate\Http\RedirectResponse;
-// Mengelola konteks tenant barbershop.
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -69,55 +66,26 @@ class BarbershopController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Mengambil data Owner yang sedang login.
-        $admin = $request->user()->admin;
+        $owner = $this->getOwner($request);
 
-        if (! $admin || $admin->role !== 'owner') {
-            abort(403, 'Akses khusus Owner.');
-        }
-
-        // Mengambil data Owner.
-        $owner = $admin->owners()->first();
-
-        if (! $owner) {
-            abort(403, 'Data Owner tidak ditemukan.');
-        }
-
-        // Memvalidasi data Barber dari form.
         $validated = $request->validate([
-            'go_barbershop_id' => 'required|integer',
-            'barber_name' => 'required|string|max:255',
-            'specialty' => 'required|string|max:255',
+            'barbershop_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'photo' => 'nullable|image|max:2048',
+            'open_time' => 'required|date_format:H:i',
+            'close_time' => 'required|date_format:H:i',
         ]);
 
-        // Memastikan barbershop yang dipilih benar-benar milik Owner.
-        $shop = $owner->goBarberShops()
-            ->where('go_barbershop_id', $validated['go_barbershop_id'])
-            ->firstOrFail();
-
-        // Mengisi konteks tenant dengan barbershop yang dipilih.
-        $tenantContext = app(TenantContext::class);
-        $tenantContext->set($shop);
-
-        try {
-            // Menyimpan foto Barber jika ada.
-            if ($request->hasFile('photo')) {
-                $validated['photo'] = $request->file('photo')
-                    ->store('barbers', 'public');
-            }
-
-            // Membuat data Barber setelah konteks tenant tersedia.
-            Barber::create($validated);
-
-            return redirect()
-                ->route('owner.barber')
-                ->with('success', 'Barber berhasil ditambahkan.');
-
-        } finally {
-            // Membersihkan konteks tenant setelah proses selesai.
-            $tenantContext->clear();
+        if ($request->hasFile('photo')) {
+            $validated['photo'] = $request->file('photo')
+                ->store('barbershops', 'public');
         }
+
+        $owner->goBarberShops()->create($validated);
+
+        return redirect()
+            ->route('owner.barbershop')
+            ->with('success', 'Barbershop berhasil ditambahkan.');
     }
 
     /**

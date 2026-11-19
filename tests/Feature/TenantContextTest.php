@@ -99,6 +99,18 @@ class TenantContextTest extends TestCase
         $serviceA->save();
     }
 
+    public function test_tenant_id_is_filled_for_a_barber_created_in_the_active_barbershop(): void
+    {
+        $goBarberShop = $this->createGoBarberShop();
+
+        $barber = $this->createBarber($goBarberShop, 'Barber A');
+
+        $this->assertSame(
+            $goBarberShop->go_barbershop_id,
+            $barber->go_barbershop_id
+        );
+    }
+
     public function test_tenant_write_cannot_move_a_service_to_another_barbershop(): void
     {
         $goBarberShopA = $this->createGoBarberShop();

@@ -28,7 +28,7 @@ class Barber extends Model
     {
         return $this->belongsTo(
             GoBarberShop::class,
-            'shop_id',
+            'go_barbershop_id',
             'go_barbershop_id'
         );
     }

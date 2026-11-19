@@ -45,6 +45,50 @@ class ShopCatalogTest extends TestCase
             ->assertSee('Potong Rambut');
     }
 
+    public function test_customer_can_reach_payment_after_selecting_a_service_barber_and_schedule(): void
+    {
+        $shop = $this->createShopWithCatalog();
+        $service = Service::withoutGlobalScope('tenant')
+            ->where('go_barbershop_id', $shop->go_barbershop_id)
+            ->firstOrFail();
+        $barber = Barber::withoutGlobalScope('tenant')
+            ->where('go_barbershop_id', $shop->go_barbershop_id)
+            ->firstOrFail();
+
+        $response = $this->post(
+            route('booking.services.store', $shop->go_barbershop_id),
+            ['service_ids' => [$service->service_id]]
+        );
+
+        $response->assertRedirectToRoute(
+            'booking.schedule',
+            $shop->go_barbershop_id
+        )
+            ->assertSessionHas('booking.shop_id', $shop->go_barbershop_id)
+            ->assertSessionHas('booking.service_ids', [$service->service_id]);
+
+        $this->get(route('booking.schedule', $shop->go_barbershop_id))
+            ->assertOk()
+            ->assertSee('Pilih Barber & Jadwal', false);
+
+        $this->post(
+            route('booking.schedule.store', $shop->go_barbershop_id),
+            [
+                'barber_id' => $barber->barber_id,
+                'booking_date' => now()->addDay()->toDateString(),
+                'booking_time' => '10:00',
+            ]
+        )->assertRedirectToRoute(
+            'booking.payment',
+            $shop->go_barbershop_id
+        );
+
+        $this->get(route('booking.payment', $shop->go_barbershop_id))
+            ->assertOk()
+            ->assertSee('Pembayaran Reservasi')
+            ->assertSee('Potong Rambut');
+    }
+
     private function createShopWithCatalog(): GoBarberShop
     {
         $user = User::factory()->create();

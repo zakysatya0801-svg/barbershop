@@ -17,7 +17,9 @@ class BookingController extends Controller
             ->firstOrFail();
 
         $services = app(PublicCatalogQuery::class)
-            ->forBarbershop($barbershop)['services'];
+            ->forBarbershop($barbershop)['services']
+            ->where('is_available', true)
+            ->values();
 
         return view('booking-barber.services', compact(
             'barbershop',
@@ -206,7 +208,7 @@ class BookingController extends Controller
 
         // Ini masih simulasi, belum terhubung payment gateway.
         $booking['booking_code'] = $booking['booking_code']
-            ?? 'GB-' . strtoupper(bin2hex(random_bytes(4)));
+            ?? 'GB-'.strtoupper(bin2hex(random_bytes(4)));
 
         $booking['payment_status'] = 'simulasi';
         $booking['reservation_status'] = 'menunggu_verifikasi';

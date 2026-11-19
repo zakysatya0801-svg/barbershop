@@ -33,6 +33,7 @@ final class PublicCatalogQuery
                     'photo',
                     'price',
                     'duration',
+                    'is_available',
                 ]),
             'barbers' => Barber::query()
                 ->withoutGlobalScope('tenant')
