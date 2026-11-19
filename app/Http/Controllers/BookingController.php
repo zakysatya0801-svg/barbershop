@@ -17,7 +17,9 @@ class BookingController extends Controller
             ->firstOrFail();
 
         $services = app(PublicCatalogQuery::class)
-            ->forBarbershop($barbershop)['services'];
+            ->forBarbershop($barbershop)['services']
+            ->where('is_available', true)
+            ->values();
 
         return view('booking-barber.services', compact(
             'barbershop',

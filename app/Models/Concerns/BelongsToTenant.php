@@ -3,7 +3,6 @@
 namespace App\Models\Concerns;
 
 use App\Support\Tenancy\TenantContext;
-use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +28,7 @@ trait BelongsToTenant
 
                 if (! $tenantContext->has()) {
                     $builder->whereRaw('1 = 0');
+
                     return;
                 }
 
@@ -91,9 +91,8 @@ trait BelongsToTenant
                     $relatedId = $model->getAttribute($foreignKey);
 
                     if ($relatedId === null) {
-                        throw new LogicException(
-                            'Relasi tenant harus diisi sebelum data disimpan.'
-                        );
+                        $relatedId = $tenantId;
+                        $model->setAttribute($foreignKey, $relatedId);
                     }
 
                     $relatedShop = $relation->getRelated()

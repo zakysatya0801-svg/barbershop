@@ -97,7 +97,7 @@ class GoBarberShop extends Model
 
     /**
      * Relasi barber.
-     * Foreign key barbers: shop_id
+     * Foreign key barbers: go_barbershop_id
      */
     public function barbers(): HasMany
     {
