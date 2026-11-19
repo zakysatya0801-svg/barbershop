@@ -70,23 +70,20 @@
             line-height: 1.7;
         }
 
-        .booking-code {
-            background: #fff8e8;
-            border: 1px dashed #e9a21a;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
+        .booking-qr {
+            margin: 22px 0;
         }
 
-        .booking-code small {
+        .booking-qr img {
+            display: block;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 10px;
+        }
+
+        .booking-qr p {
             color: #89919e;
-            font-size: 11px;
-        }
-
-        .booking-code h2 {
-            margin-top: 8px;
-            color: #b77900;
-            letter-spacing: 2px;
+            font-size: 12px;
         }
 
         .details {
@@ -171,12 +168,21 @@
 
         <p class="description">
             Terima kasih telah melakukan reservasi di GoBarber.
-            Simpan kode booking berikut sebagai bukti reservasi kamu.
+            Tunjukkan QR code berikut sebagai bukti reservasi kamu.
         </p>
 
-        <div class="booking-code">
-            <small>KODE BOOKING KAMU</small>
-            <h2>{{ $booking['booking_code'] }}</h2>
+        @php
+            $bookingQrCode = base64_encode((string) \Linkxtr\QrCode\Facades\QrCode::size(180)
+                ->format('svg')
+                ->generate($booking['booking_code']));
+        @endphp
+
+        <div class="booking-qr">
+            <img
+                src="data:image/svg+xml;base64,{{ $bookingQrCode }}"
+                alt="QR code bukti reservasi"
+            >
+            <p>Scan QR code ini untuk bukti reservasi kamu.</p>
         </div>
 
         <div class="details">
