@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Admin;
-use App\Models\Barber;
 use App\Models\GoBarberShop;
 use App\Models\Owner;
 use App\Models\Service;
@@ -36,6 +35,15 @@ class ShopCatalogTest extends TestCase
             ->assertSee('Barber Test');
     }
 
+    public function test_booking_service_selection_uses_the_selected_shop_catalog(): void
+    {
+        $shop = $this->createShopWithCatalog();
+
+        $this->get(route('booking', $shop->go_barbershop_id))
+            ->assertOk()
+            ->assertSee('Potong Rambut');
+    }
+
     private function createShopWithCatalog(): GoBarberShop
     {
         $user = User::factory()->create();
@@ -64,7 +72,7 @@ class ShopCatalogTest extends TestCase
                 'price' => 100000,
                 'duration' => 30,
             ]);
-            Barber::query()->create([
+            $shop->barbers()->create([
                 'barber_name' => 'Barber Test',
                 'specialty' => 'Haircut',
             ]);

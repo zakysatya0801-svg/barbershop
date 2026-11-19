@@ -103,8 +103,7 @@ class AuthController extends Controller
                 'nama_owners' => $validated['name'],
                 'email' => $validated['email'],
 
-                // Nama kolom sesuai database aktual.
-                'phonr' => $validated['phone'],
+                'phone' => $validated['phone'],
 
                 'admin_id' => $admin->admin_id,
             ]);
@@ -121,7 +120,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses login Owner.
+     * Proses login.
      */
     public function login(Request $request): RedirectResponse
     {
@@ -155,45 +154,7 @@ class AuthController extends Controller
         // Memperbarui session.
         $request->session()->regenerate();
 
-        $user = $request->user();
-
-        // Hanya Owner yang boleh menggunakan login publik.
-        if (! $user || ! $user->hasRole('owner')) {
-
-            Auth::logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()
-                ->route('login')
-                ->withErrors([
-                    'email' => 'Login hanya tersedia untuk akun Owner GoBarberShop.',
-                ])
-                ->withInput([
-                    'email' => $validated['email'],
-                ]);
-        }
-
-        // Memastikan profil Owner tersedia.
-        if (! $user->owner) {
-
-            Auth::logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()
-                ->route('login')
-                ->withErrors([
-                    'email' => 'Profil Owner tidak ditemukan.',
-                ]);
-        }
-
-        // Login berhasil, langsung ke dashboard Owner.
-        return redirect()
-            ->route('client.dashboard')
-            ->with('success', 'Login berhasil! Selamat datang di Dashboard Owner.');
+        return $this->redirectByRole($request);
     }
 
     /**
@@ -206,9 +167,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()
-            ->route('home')
-            ->with('success', 'Anda berhasil logout.');
+        return redirect()->route('login');
     }
 
     /**
@@ -218,15 +177,30 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if (! $user || ! $user->hasRole('owner')) {
-            Auth::logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('login');
+        if ($user?->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->route('client.dashboard');
+        if ($user?->hasRole('owner')) {
+            return redirect()->route('client.dashboard');
+        }
+
+        return $this->logoutAndRedirectToLogin(
+            $request,
+            'Akun tidak memiliki akses Admin atau Owner.'
+        );
+    }
+
+    private function logoutAndRedirectToLogin(
+        Request $request,
+        string $error
+    ): RedirectResponse {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()
+            ->route('login')
+            ->withErrors(['email' => $error]);
     }
 }

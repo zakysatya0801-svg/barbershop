@@ -292,6 +292,12 @@
                     Jelajah Barbershop
                 </a>
 
+                <a href="{{ route('shops.explore') }}#kategori">Layanan &amp; Promo</a>
+                <a href="{{ route('login') }}">Cek Reservasi</a>
+                <a href="{{ route('login') }}">Bantuan</a>
+                @guest
+                    <a href="{{ route('login') }}">Dashboard</a>
+                @endguest
             </nav>
 
             <div class="nav-auth">
@@ -303,18 +309,22 @@
                 @endguest
 
                 @auth
-                    @if (auth()->user()->hasRole('owner'))
+                    @if (auth()->user()->hasRole('admin'))
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
+                            Dashboard
+                        </a>
+                    @elseif (auth()->user()->hasRole('owner'))
                         <a href="{{ route('client.dashboard') }}" class="btn btn-light">
                             Dashboard
                         </a>
-
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn">
-                                Logout
-                            </button>
-                        </form>
                     @endif
+
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn">
+                            Logout
+                        </button>
+                    </form>
                 @endauth
 
             </div>

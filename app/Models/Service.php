@@ -33,7 +33,7 @@ class Service extends Model
         ];
     }
 
-    public function goBarberShop(): BelongsTo
+    public function goBarbershop(): BelongsTo
     {
         return $this->belongsTo(
             GoBarberShop::class,
@@ -41,8 +41,9 @@ class Service extends Model
             'go_barbershop_id'
         );
     }
+
     public function getRouteKeyName(): string
-{
-    return 'service_id';
-}
+    {
+        return 'service_id';
+    }
 }

@@ -1022,7 +1022,28 @@
             </nav>
 
             <div class="nav-actions">
-                <a href="{{ url('/login') }}" class="login-link">Masuk</a>
+                @guest
+                    <a href="{{ route('login') }}" class="login-link">Masuk</a>
+                    <a href="{{ route('login') }}" class="login-link">Dashboard</a>
+                @endguest
+
+                @auth
+                    @if (auth()->user()->hasRole('admin'))
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-orange">
+                            Dashboard
+                        </a>
+                    @elseif (auth()->user()->hasRole('owner'))
+                        <a href="{{ route('client.dashboard') }}" class="btn btn-orange">
+                            Dashboard
+                        </a>
+                    @endif
+
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline">Logout</button>
+                    </form>
+                @endauth
+
                 <a href="{{ route('shops.explore') }}" class="btn btn-orange">
                     Booking Sekarang
                 </a>

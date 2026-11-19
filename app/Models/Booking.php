@@ -106,4 +106,14 @@ class Booking extends Model
             'booking_date' => 'date',
         ];
     }
+
+    // Menghubungkan booking dengan customer yang membuat reservasi.
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(
+            Customer::class,
+            'customer_id',
+            'customer_id'
+        );
+    }
 }

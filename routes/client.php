@@ -33,7 +33,11 @@ Route::get('/client/dashboard', function () {
     // Menampilkan dashboard Owner.
     return view(
         'base-client.dashboard',
-        compact('owner', 'barbershops')
+        [
+            'owner' => $owner,
+            'barbershops' => $barbershops,
+            'totalBarbershops' => $barbershops->count(),
+        ]
     );
 })
     // Membatasi dashboard untuk pengguna login dengan role Owner.
