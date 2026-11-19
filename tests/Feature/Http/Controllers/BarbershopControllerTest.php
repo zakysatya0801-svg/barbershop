@@ -44,6 +44,23 @@ class BarbershopControllerTest extends TestCase
         ]);
     }
 
+    public function test_owner_dashboard_displays_the_saved_barbershop_photo_url(): void
+    {
+        $owner = $this->createOwner();
+        $barbershop = $owner->goBarberShops()->create([
+            'barbershop_name' => 'Devi BER',
+            'description' => 'Barbershop test',
+            'photo' => 'images/barbershops/devi-ber.jpg',
+            'open_time' => '09:00',
+            'close_time' => '18:00',
+        ]);
+
+        $this->actingAs($owner->admin->user)
+            ->get(route('owner.barbershop.edit', $barbershop->go_barbershop_id))
+            ->assertOk()
+            ->assertSee(asset('images/barbershops/devi-ber.jpg'), false);
+    }
+
     private function createOwner(): Owner
     {
         $user = User::factory()->create();

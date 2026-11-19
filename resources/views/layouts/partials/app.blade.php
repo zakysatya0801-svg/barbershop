@@ -30,9 +30,6 @@
                     Jelajah Barbershop
                 </a>
                 <a href="#" class="rounded-full px-3 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-900">
-                    Layanan & Promo
-                </a>
-                <a href="#" class="rounded-full px-3 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-900">
                     Cek Reservasi
                 </a>
                 <a href="#" class="rounded-full px-3 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-900">

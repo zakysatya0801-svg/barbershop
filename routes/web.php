@@ -112,7 +112,7 @@ Route::get('/booking/{shop}/gagal', [BookingController::class, 'failed'])
 */
 
 Route::get('/dashboard/{shop}', function (string $shop) {
-    return 'Dashboard Client Barbershop: ' . e($shop);
+    return 'Dashboard Client Barbershop: '.e($shop);
 })
     ->middleware(['auth', EnsureClientOwner::class])
     ->name('dashboard');

@@ -26,6 +26,23 @@ class ShopCatalogTest extends TestCase
             ->assertSee('Rp100.000');
     }
 
+    public function test_shop_explore_and_detail_hide_help_and_dashboard_navigation(): void
+    {
+        $shop = $this->createShopWithCatalog();
+
+        $this->get(route('shops.explore'))
+            ->assertOk()
+            ->assertDontSee('href="'.route('login').'">Cek Reservasi</a>', false)
+            ->assertDontSee('href="'.route('login').'">Bantuan</a>', false)
+            ->assertDontSee('href="'.route('login').'">Dashboard</a>', false);
+
+        $this->get(route('shops.show', $shop->go_barbershop_id))
+            ->assertOk()
+            ->assertDontSee('href="'.route('login').'">Cek Reservasi</a>', false)
+            ->assertDontSee('href="'.route('login').'">Bantuan</a>', false)
+            ->assertDontSee('href="'.route('login').'">Dashboard</a>', false);
+    }
+
     public function test_shop_detail_includes_services_and_barbers_without_an_active_tenant(): void
     {
         $shop = $this->createShopWithCatalog();
@@ -34,6 +51,21 @@ class ShopCatalogTest extends TestCase
             ->assertOk()
             ->assertSee('Potong Rambut')
             ->assertSee('Barber Test');
+    }
+
+    public function test_shop_photo_uses_the_same_url_in_explore_and_detail_pages(): void
+    {
+        $shop = $this->createShopWithCatalog();
+        $shop->update(['photo' => 'barbershops/shop-photo.jpg']);
+        $photoUrl = $shop->fresh()->photo_url;
+
+        $this->get(route('shops.explore'))
+            ->assertOk()
+            ->assertSee($photoUrl, false);
+
+        $this->get(route('shops.show', $shop->go_barbershop_id))
+            ->assertOk()
+            ->assertSee($photoUrl, false);
     }
 
     public function test_booking_service_selection_uses_the_selected_shop_catalog(): void

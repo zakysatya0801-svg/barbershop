@@ -251,12 +251,13 @@
                 <a href="{{ route('shops.explore') }}"
                     class="{{ request()->routeIs('shops.*') ? 'active' : '' }}">Jelajah Barbershop</a>
 
-                <a href="{{ route('shops.explore') }}#kategori">Layanan &amp; Promo</a>
-                <a href="{{ route('login') }}">Cek Reservasi</a>
-                <a href="{{ route('login') }}">Bantuan</a>
-                @guest
-                    <a href="{{ route('login') }}">Dashboard</a>
-                @endguest
+                @unless (request()->routeIs('shops.explore', 'shops.show'))
+                    <a href="{{ route('login') }}">Cek Reservasi</a>
+                    <a href="{{ route('login') }}">Bantuan</a>
+                    @guest
+                        <a href="{{ route('login') }}">Dashboard</a>
+                    @endguest
+                @endunless
             </nav>
 
 
@@ -269,13 +270,17 @@
 
             @auth
                 @if (auth()->user()->hasRole('admin'))
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
-                        Dashboard
-                    </a>
+                    @unless (request()->routeIs('shops.explore', 'shops.show'))
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
+                            Dashboard
+                        </a>
+                    @endunless
                 @elseif (auth()->user()->hasRole('owner'))
-                    <a href="{{ route('client.dashboard') }}" class="btn btn-light">
-                        Dashboard
-                    </a>
+                    @unless (request()->routeIs('shops.explore', 'shops.show'))
+                        <a href="{{ route('client.dashboard') }}" class="btn btn-light">
+                            Dashboard
+                        </a>
+                    @endunless
                 @endif
 
                 <form action="{{ route('logout') }}" method="POST">

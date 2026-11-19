@@ -122,13 +122,12 @@
                 @forelse($shops as $shop)
                     @php
                         $minimumPrice = $shop->services->min('price');
-                        $photo = $shop->photo;
                     @endphp
 
                     <article class="shop-card">
-                        @if($photo)
+                        @if($shop->photo_url)
                             <img class="shop-photo"
-                                 src="{{ asset('storage/' . $photo) }}"
+                                 src="{{ $shop->photo_url }}"
                                  alt="{{ $shop->barbershop_name }}">
                         @else
                             <div class="shop-photo shop-placeholder">💈</div>
