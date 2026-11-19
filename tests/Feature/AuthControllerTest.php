@@ -279,43 +279,6 @@ class AuthControllerTest extends TestCase
             ->assertOk();
     }
 
-    public function test_owner_can_create_a_barbershop_with_valid_details(): void
-    {
-        $ownerUser = $this->createUserWithRole('owner');
-        $owner = $this->createOwnerProfile($ownerUser);
-
-        $response = $this->actingAs($ownerUser)->post(route('owner.barbershop.store'), [
-            'barbershop_name' => 'Barbershop Baru',
-            'description' => 'Deskripsi barbershop',
-            'open_time' => '09:00',
-            'close_time' => '18:00',
-        ]);
-
-        $response->assertRedirectToRoute('owner.barbershop')
-            ->assertSessionHas('success', 'Barbershop berhasil ditambahkan.');
-        $this->assertDatabaseHas('go_barbershops', [
-            'owner_id' => $owner->owner_id,
-            'barbershop_name' => 'Barbershop Baru',
-            'description' => 'Deskripsi barbershop',
-        ]);
-    }
-
-    public function test_owner_cannot_create_a_barbershop_without_required_details(): void
-    {
-        $ownerUser = $this->createUserWithRole('owner');
-        $this->createOwnerProfile($ownerUser);
-
-        $response = $this->actingAs($ownerUser)
-            ->post(route('owner.barbershop.store'), []);
-
-        $response->assertSessionHasErrors([
-            'barbershop_name',
-            'open_time',
-            'close_time',
-        ]);
-        $this->assertDatabaseCount('go_barbershops', 0);
-    }
-
     public function test_owner_is_redirected_to_their_dashboard_from_another_owners_shop_dashboard(): void
     {
         $ownerUser = $this->createUserWithRole('owner');

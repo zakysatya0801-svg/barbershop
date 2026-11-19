@@ -17,45 +17,40 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #0d0f14;
-            color: #f5f5f5;
+            background: #f3f5f7;
+            color: #101828;
         }
 
         .navbar {
             height: 62px;
-            background: #151821;
+            background: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 5.2%;
-            border-bottom: 1px solid #262a35;
         }
 
         .logo {
             font-size: 21px;
             font-weight: 800;
-            color: #f5a623;
+            color: #090d19;
             text-decoration: none;
         }
 
         .navbar a:last-child {
             font-size: 13px;
-            color: #f5f5f5;
+            color: #101828;
             text-decoration: none;
         }
 
-        .navbar a:last-child:hover {
-            color: #f5a623;
-        }
-
         .page-heading {
-            background: #151821;
+            background: #eef0f3;
             padding: 35px 5.2%;
         }
 
         .step-label,
         .section-label {
-            color: #f5a623;
+            color: #c47b00;
             font-size: 11px;
             font-weight: 800;
             margin-bottom: 10px;
@@ -64,11 +59,10 @@
         .page-heading h1 {
             font-size: 27px;
             margin-bottom: 8px;
-            color: #fff;
         }
 
         .page-heading p {
-            color: #a4a8b3;
+            color: #7b8492;
             font-size: 13px;
         }
 
@@ -82,13 +76,12 @@
         .step {
             flex: 1;
             text-align: center;
-            color: #a4a8b3;
         }
 
         .step-circle {
             width: 36px;
             height: 36px;
-            background: #292d38;
+            background: #090d19;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -101,16 +94,8 @@
 
         .step.done .step-circle,
         .step.active .step-circle {
-            background: #f5a623;
+            background: #ffa500;
             color: #090d19;
-        }
-
-        .step.active .step-name {
-            color: #f5a623;
-        }
-
-        .step.done .step-name {
-            color: #d1d5db;
         }
 
         .step-name {
@@ -129,8 +114,7 @@
         }
 
         .card {
-            background: #151821;
-            border: 1px solid #262a35;
+            background: white;
             border-radius: 18px;
             padding: 25px;
         }
@@ -138,30 +122,29 @@
         .card h2 {
             font-size: 18px;
             margin-bottom: 8px;
-            color: #fff;
         }
 
         .description {
-            color: #a4a8b3;
+            color: #89919e;
             font-size: 12px;
             margin-bottom: 22px;
         }
 
         .payment-option {
-            border: 1px solid #f5a623;
+            border: 1px solid #ffa500;
             border-radius: 12px;
             padding: 17px;
             display: flex;
             align-items: center;
             gap: 13px;
-            background: #25232a;
+            background: #fffaf0;
         }
 
         .payment-icon {
             width: 48px;
             height: 48px;
             border-radius: 10px;
-            background: #303441;
+            background: white;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -171,18 +154,17 @@
         .payment-name {
             font-weight: 800;
             font-size: 14px;
-            color: #fff;
         }
 
         .payment-description {
             font-size: 11px;
-            color: #a4a8b3;
+            color: #89919e;
             margin-top: 5px;
         }
 
         .payment-badge {
             margin-left: auto;
-            color: #f5a623;
+            color: #b77900;
             font-size: 11px;
             font-weight: 700;
         }
@@ -190,10 +172,10 @@
         .notice {
             margin-top: 17px;
             padding: 14px;
-            background: #302718;
-            border: 1px solid #59431e;
+            background: #fff7e6;
+            border: 1px solid #fde7b0;
             border-radius: 10px;
-            color: #f5cd83;
+            color: #8a5b00;
             font-size: 12px;
             line-height: 1.6;
         }
@@ -207,41 +189,35 @@
             justify-content: space-between;
             gap: 15px;
             padding: 14px 0;
-            border-bottom: 1px solid #303441;
+            border-bottom: 1px solid #edf0f2;
             font-size: 12px;
         }
 
         .summary-row span:first-child {
-            color: #a4a8b3;
+            color: #89919e;
         }
 
         .summary-row strong {
             text-align: right;
             font-size: 12px;
-            color: #fff;
         }
 
         .service-item {
             padding: 12px 0;
-            border-bottom: 1px solid #303441;
+            border-bottom: 1px solid #edf0f2;
         }
 
         .service-name {
             font-size: 12px;
             font-weight: 700;
-            color: #fff;
         }
 
         .service-detail {
             display: flex;
             justify-content: space-between;
-            color: #a4a8b3;
+            color: #89919e;
             font-size: 11px;
             margin-top: 5px;
-        }
-
-        .service-detail strong {
-            color: #f5a623;
         }
 
         .total-row {
@@ -253,12 +229,10 @@
 
         .total-row span {
             font-size: 13px;
-            color: #fff;
         }
 
         .total-row strong {
             font-size: 23px;
-            color: #f5a623;
         }
 
         .btn-pay,
@@ -274,36 +248,32 @@
 
         .btn-pay {
             border: none;
-            background: #f5a623;
-            color: #111;
+            background: #090d19;
+            color: white;
         }
 
         .btn-pay:hover {
-            background: #ffc15a;
+            background: #252b3b;
         }
 
         .btn-failed {
             margin-top: 12px;
-            border: 1px solid #dc6262;
-            background: #2b1c21;
-            color: #fca5a5;
+            border: 1px solid #dc2626;
+            background: white;
+            color: #dc2626;
         }
 
         .btn-failed:hover {
-            background: #44232a;
+            background: #fef2f2;
         }
 
         .btn-back {
             display: block;
             text-align: center;
             margin-top: 15px;
-            color: #a4a8b3;
+            color: #667085;
             font-size: 12px;
             text-decoration: none;
-        }
-
-        .btn-back:hover {
-            color: #f5a623;
         }
 
         .summary-card {
@@ -469,7 +439,7 @@
 
                 @empty
 
-                    <p style="font-size:12px; color:#f87171;">
+                    <p style="font-size:12px; color:#dc2626;">
                         Layanan booking tidak ditemukan.
                     </p>
 

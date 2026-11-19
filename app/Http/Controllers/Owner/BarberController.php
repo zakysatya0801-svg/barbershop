@@ -101,7 +101,7 @@ class BarberController extends Controller
             // Membuat data Barber.
             // Trait BelongsToTenant akan otomatis mengisi go_barbershop_id
             // berdasarkan TenantContext yang sudah diatur di atas.
-            $shop->barbers()->create([
+            Barber::create([
                 'barber_name' => $validated['barber_name'],
                 'specialty' => $validated['specialty'],
                 'photo' => $validated['photo'] ?? null,

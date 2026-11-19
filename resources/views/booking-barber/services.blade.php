@@ -9,48 +9,25 @@
 
     <style>
         * { box-sizing: border-box; }
-
         body {
             margin: 0;
-            background: #0d0f14;
-            color: #f5f5f5;
+            background: #f4f6f8;
+            color: #111522;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-
         header {
-            background: #151821;
+            background: white;
             padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #262a35;
         }
-
-        .logo { font-size: 21px; font-weight: 800; color: #f5a623; }
-
-        header a {
-            text-decoration: none;
-            color: #f5f5f5;
-            font-size: 13px;
-        }
-
-        header a:hover { color: #f5a623; }
-
-        .hero {
-            padding: 35px 5%;
-            background: #151821;
-        }
-
-        .label {
-            color: #f5a623;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        h1 { font-size: 27px; margin: 8px 0; color: #fff; }
-
-        .subtitle { color: #a4a8b3; font-size: 13px; }
-
+        .logo { font-size: 21px; font-weight: 800; }
+        header a { text-decoration: none; color: #111522; font-size: 13px; }
+        .hero { padding: 35px 5%; background: #eef0f3; }
+        .label { color: #a56800; font-size: 11px; font-weight: 800; }
+        h1 { font-size: 27px; margin: 8px 0; }
+        .subtitle { color: #777; font-size: 13px; }
         .steps {
             display: flex;
             justify-content: space-between;
@@ -59,11 +36,8 @@
             text-align: center;
             font-size: 12px;
             font-weight: 700;
-            color: #a4a8b3;
         }
-
         .step { width: 33%; }
-
         .circle {
             width: 36px;
             height: 36px;
@@ -71,17 +45,10 @@
             place-items: center;
             margin: 0 auto 9px;
             border-radius: 50%;
-            background: #292d38;
-            color: #fff;
+            background: #111522;
+            color: white;
         }
-
-        .step.active .circle {
-            background: #f5a623;
-            color: #111;
-        }
-
-        .step.active { color: #f5a623; }
-
+        .step.active .circle { background: #ffa500; color: #111; }
         .container {
             max-width: 1250px;
             margin: 30px auto 70px;
@@ -90,125 +57,64 @@
             grid-template-columns: 1.5fr .8fr;
             gap: 25px;
         }
-
         .card {
-            background: #151821;
+            background: white;
             padding: 25px;
-            border: 1px solid #262a35;
             border-radius: 17px;
             margin-bottom: 20px;
         }
-
-        h2 { font-size: 18px; margin: 7px 0 20px; color: #fff; }
-
+        h2 { font-size: 18px; margin: 7px 0 20px; }
         .service {
             display: flex;
             align-items: center;
             gap: 15px;
-            border: 1.5px solid #303441;
-            background: #1c202b;
+            border: 1.5px solid #e8eaee;
             padding: 16px;
             border-radius: 14px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: .2s;
         }
-
-        .service:has(input:checked) {
-            border: 2px solid #f5a623;
-            background: #25232a;
-        }
-
-        .service input {
-            width: 19px;
-            height: 19px;
-            accent-color: #f5a623;
-        }
-
+        .service:has(input:checked) { border: 2px solid #111522; background: #fafbfc; }
+        .service input { width: 19px; height: 19px; accent-color: #111522; }
         .service-info { flex: 1; }
-
-        .service-info strong {
-            display: block;
-            font-size: 14px;
-            color: #fff;
-        }
-
-        .service-info small {
-            display: block;
-            color: #a4a8b3;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .price {
-            font-weight: 800;
-            font-size: 14px;
-            white-space: nowrap;
-            color: #f5a623;
-        }
-
-        .summary {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
+        .service-info strong { display: block; font-size: 14px; }
+        .service-info small { display: block; color: #888; font-size: 11px; margin-top: 5px; }
+        .price { font-weight: 800; font-size: 14px; white-space: nowrap; }
+        .summary { position: sticky; top: 20px; height: fit-content; }
         .summary-row {
             display: flex;
             justify-content: space-between;
             gap: 12px;
             font-size: 12px;
             padding: 12px 0;
-            border-bottom: 1px solid #303441;
-            color: #f5f5f5;
+            border-bottom: 1px solid #eee;
         }
-
-        .summary-row span { color: #a4a8b3; }
-
-        .summary-row strong { color: #fff; }
-
+        .summary-row span { color: #888; }
         .total {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 22px;
-            color: #fff;
         }
-
-        .total strong { font-size: 22px; color: #f5a623; }
-
-        .total small { color: #d1d5db; }
-
+        .total strong { font-size: 22px; }
         button {
             width: 100%;
             padding: 16px;
             margin-top: 23px;
             border: none;
             border-radius: 30px;
-            background: #f5a623;
-            color: #111;
+            background: #090d19;
+            color: white;
             font-weight: 700;
             cursor: pointer;
-            transition: .2s;
         }
-
-        button:hover { background: #ffc15a; }
-
-        .error { color: #f87171; font-size: 12px; margin-top: 10px; }
-
-        footer {
-            background: #151821;
-            padding: 35px 5%;
-            color: #a4a8b3;
-            font-size: 12px;
-            border-top: 1px solid #262a35;
-        }
-
+        button:hover { background: #252c3c; }
+        .error { color: #dc2626; font-size: 12px; margin-top: 10px; }
+        footer { background: white; padding: 35px 5%; color: #777; font-size: 12px; }
         @media(max-width: 800px) {
             .container { grid-template-columns: 1fr; }
             .summary { position: static; }
         }
-
         @media(max-width: 500px) {
             h1 { font-size: 22px; }
             .card { padding: 17px; }
@@ -309,7 +215,7 @@
             <div class="total">
                 <div>
                     <small>Total Pembayaran</small>
-                    <div style="font-size:10px;color:#34d399">Harga layanan</div>
+                    <div style="font-size:10px;color:#15976e">Harga layanan</div>
                 </div>
                 <strong id="total">Rp 0</strong>
             </div>
@@ -320,7 +226,7 @@
 </form>
 
 <footer>
-    <strong style="color:#f5a623;font-size:17px">✂ GoBarber</strong>
+    <strong style="color:#111;font-size:17px">✂ GoBarber</strong>
     <p>Platform digital reservasi dan antrean potong rambut.</p>
     © 2025 GoBarber. Hak Cipta Dilindungi.
 </footer>

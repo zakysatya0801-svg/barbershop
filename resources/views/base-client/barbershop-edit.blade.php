@@ -53,12 +53,12 @@
                 </div>
 
                 {{-- Menampilkan foto lama jika tersedia. --}}
-                @if ($barbershop->photo)
+                @if ($barbershop->photo_url)
                     <div class="mb-3">
                         <label class="form-label">Foto Saat Ini</label>
                         <div>
                             <img
-                                src="{{ asset('storage/' . $barbershop->photo) }}"
+                                src="{{ $barbershop->photo_url }}"
                                 alt="Foto barbershop"
                                 width="150"
                                 style="object-fit: cover;"

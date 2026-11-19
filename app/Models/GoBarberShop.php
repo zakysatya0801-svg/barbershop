@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GoBarberShop extends Model
 {
@@ -117,6 +120,31 @@ class GoBarberShop extends Model
             Review::class,
             'go_barbershop_id',
             'go_barbershop_id'
+        );
+    }
+
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function (): ?string {
+                if (! $this->photo) {
+                    return null;
+                }
+
+                if (Str::startsWith($this->photo, ['http://', 'https://', '//'])) {
+                    return $this->photo;
+                }
+
+                if (Str::startsWith($this->photo, ['/'])) {
+                    return asset(ltrim($this->photo, '/'));
+                }
+
+                if (Str::startsWith($this->photo, ['storage/', 'images/'])) {
+                    return asset($this->photo);
+                }
+
+                return Storage::disk('public')->url($this->photo);
+            },
         );
     }
 

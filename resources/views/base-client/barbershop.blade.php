@@ -75,9 +75,9 @@
 
                                     <td>
                                         {{-- Foto ditampilkan jika tersedia. --}}
-                                        @if ($shop->photo)
+                                        @if ($shop->photo_url)
                                             <img
-                                                src="{{ asset('storage/' . $shop->photo) }}"
+                                                src="{{ $shop->photo_url }}"
                                                 alt="Foto {{ $shop->barbershop_name }}"
                                                 width="70"
                                                 height="60"
